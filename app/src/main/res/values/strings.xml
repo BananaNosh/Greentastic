@@ -4,4 +4,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="map_destination_hint">destination</string>
+    <string name="map_permission_explication">Berechtigung für Gerätespeicher notwendig für das Anzeigen der Karte</string>
 </resources>

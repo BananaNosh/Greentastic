@@ -57,22 +57,13 @@ class MapFragment : Fragment() {
             }
 
             override fun onPermissionDenied(permission: String) {
-//                activity?.onBackPressed()
-            }
 
-            override fun onPermissionDeniedBefore(permission: String) {
-                if (view != null) {
-//                    Snackbar.make(
-//                        view!!,
-//                        R.string.snackbar_map_permission,
-//                        Snackbar.LENGTH_LONG
-//                    ).show()
-                }
             }
         }
         (activity as GreentasticActivity).withPermission(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            listener
+            listener,
+            getString(R.string.map_permission_explication)
         )
         mapView.onResume()
     }

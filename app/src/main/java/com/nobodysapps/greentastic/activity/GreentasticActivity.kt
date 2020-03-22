@@ -78,5 +78,4 @@ abstract class GreentasticActivity: AppCompatActivity() {
 interface PermissionListener {
     fun onPermissionGranted(permission: String)
     fun onPermissionDenied(permission: String)
-    fun onPermissionDeniedBefore(permission: String) {}
 }
