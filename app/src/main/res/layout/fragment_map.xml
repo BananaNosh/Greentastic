@@ -12,7 +12,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_dashboard_black_24dp"/>
-        <EditText
+        <AutoCompleteTextView
+            android:id="@+id/destinationEditText"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:hint="@string/map_destination_hint"
@@ -20,6 +21,7 @@
             android:imeOptions="actionSearch"
             />
     </LinearLayout>
+    <!--suppress AndroidUnknownAttribute -->
     <org.osmdroid.views.MapView
         android:id="@+id/mapView"
         android:layout_width="fill_parent"
