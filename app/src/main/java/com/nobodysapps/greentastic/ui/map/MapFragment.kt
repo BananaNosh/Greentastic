@@ -87,8 +87,6 @@ class MapFragment : Fragment() {
                             val adapter =
                                 ArrayAdapter(it, android.R.layout.simple_list_item_1, suggestions)
                             setAdapter(adapter)
-                            width = 300
-                            height = 400
                             isModal = true
                         }.show()
                     }
