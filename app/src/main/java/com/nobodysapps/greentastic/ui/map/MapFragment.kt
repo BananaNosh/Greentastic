@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import com.nobodysapps.greentastic.BuildConfig
@@ -57,37 +59,52 @@ class MapFragment : Fragment() {
         }
         mapView.overlays.add(attribution)
 
-        setupSearchTextView()
+        setupSearchTextViews()
     }
 
-    private fun setupSearchTextView() {
+    private fun setupSearchTextViews() {
         destinationEditText.setOnEditorActionListener { v, actionId, event ->
+            val searchString = v.text.toString()
+            if (searchString.isNotEmpty()
+                && (actionId == EditorInfo.IME_ACTION_SEARCH // TODO check enter
+                        || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER))
+            ) {
+                showCompletionFor(searchString, v as EditText)
+            }
+            true
+        }
+        sourceEditText.setOnEditorActionListener { v, actionId, event ->
             val searchString = v.text.toString()
             if (searchString.isNotEmpty()
                 && (actionId == EditorInfo.IME_ACTION_SEARCH
                         || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER))
             ) {
-                showCompletionFor(searchString)
+                showCompletionFor(searchString, v as EditText)
             }
             true
         }
     }
 
-    private fun showCompletionFor(searchString: String) {
+    private fun showCompletionFor(searchString: String, editTextView: EditText) {
         val autoCompleteSingle = apiService.getAutoComplete(searchString)
         autoCompleteSingle
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(object : SingleObserver<List<String>> {
                 override fun onSuccess(suggestions: List<String>) {
-                    Log.d("MapFragment", "suggestions: $suggestions")
+                    Log.d(TAG, "suggestions: $suggestions")
                     context?.let {
                         ListPopupWindow(it).apply {
-                            anchorView = destinationEditText
+                            anchorView = editTextView
                             val adapter =
-                                ArrayAdapter(it, android.R.layout.simple_list_item_1, suggestions)
+                                ArrayAdapter(it, android.R.layout.simple_list_item_1, suggestions) // TODO check if it works on first try
                             setAdapter(adapter)
                             isModal = true
+                            setOnItemClickListener{ adapterView, view, position, id ->
+                                val selectedCompletion = (view as TextView).text.toString()
+                                Log.d(TAG, "$selectedCompletion, $position, $id")
+                                onCompletionClicked(selectedCompletion, editTextView)
+                            }
                         }.show()
                     }
                 }
@@ -97,10 +114,14 @@ class MapFragment : Fragment() {
                 }
 
                 override fun onError(e: Throwable) {
-                    Log.d("MapFragment", "Some error $e")
+                    Log.d(TAG, "Some error $e")
                 }
 
             })
+    }
+
+    private fun onCompletionClicked(selectedCompletion: String, editTextView: EditText) {
+        editTextView.setText(selectedCompletion)
     }
 
     override fun onResume() {
@@ -129,5 +150,9 @@ class MapFragment : Fragment() {
         super.onPause()
         mapView.onPause()
         if (!compositeDisposable.isDisposed) compositeDisposable.dispose()
+    }
+
+    companion object {
+        const val TAG = "MapFragment"
     }
 }
