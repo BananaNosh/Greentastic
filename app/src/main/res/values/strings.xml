@@ -6,4 +6,6 @@
     <string name="map_destination_hint">destination</string>
     <string name="map_permission_explication">Berechtigung für Gerätespeicher notwendig für das Anzeigen der Karte</string>
     <string name="map_source_hint">current location</string>
+    <string name="map_source_content">travel source</string>
+    <string name="map_destination_content">travel destination</string>
 </resources>
