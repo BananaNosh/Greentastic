@@ -3,6 +3,7 @@ package com.nobodysapps.greentastic.ui.map
 import android.Manifest
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_ENTER
 import android.view.LayoutInflater
@@ -63,22 +64,18 @@ class MapFragment : Fragment() {
     }
 
     private fun setupSearchTextViews() {
-        destinationEditText.setOnEditorActionListener { v, actionId, event ->
+        destinationEditText.setOnEditorActionListener(editTextListenerLambda())
+        sourceEditText.setOnEditorActionListener(editTextListenerLambda())
+    }
+
+    private fun editTextListenerLambda(): (v: TextView, actionId: Int, event: KeyEvent?) -> Boolean {
+        return { v, actionId, event ->
             val searchString = v.text.toString()
             if (searchString.isNotEmpty()
                 && (actionId == EditorInfo.IME_ACTION_SEARCH // TODO check enter
                         || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER))
             ) {
-                showCompletionFor(searchString, v as EditText)
-            }
-            true
-        }
-        sourceEditText.setOnEditorActionListener { v, actionId, event ->
-            val searchString = v.text.toString()
-            if (searchString.isNotEmpty()
-                && (actionId == EditorInfo.IME_ACTION_SEARCH
-                        || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER))
-            ) {
+                Log.d(TAG, "button clicked $v")
                 showCompletionFor(searchString, v as EditText)
             }
             true
@@ -97,10 +94,14 @@ class MapFragment : Fragment() {
                         ListPopupWindow(it).apply {
                             anchorView = editTextView
                             val adapter =
-                                ArrayAdapter(it, android.R.layout.simple_list_item_1, suggestions) // TODO check if it works on first try
+                                ArrayAdapter(
+                                    it,
+                                    android.R.layout.simple_list_item_1,
+                                    suggestions
+                                ) // TODO check if it works on first try
                             setAdapter(adapter)
                             isModal = true
-                            setOnItemClickListener{ adapterView, view, position, id ->
+                            setOnItemClickListener { _, view, position, id ->
                                 val selectedCompletion = (view as TextView).text.toString()
                                 Log.d(TAG, "$selectedCompletion, $position, $id")
                                 onCompletionClicked(selectedCompletion, editTextView)
@@ -110,6 +111,7 @@ class MapFragment : Fragment() {
                 }
 
                 override fun onSubscribe(d: Disposable) {
+                    Log.d(TAG, "onSubscribe called")
                     compositeDisposable.add(d)
                 }
 
@@ -122,6 +124,14 @@ class MapFragment : Fragment() {
 
     private fun onCompletionClicked(selectedCompletion: String, editTextView: EditText) {
         editTextView.setText(selectedCompletion)
+        val source = sourceEditText.text.toString()
+        val dest = destinationEditText.text.toString()
+        if (source.isEmpty()) {
+            // source = currentLocation
+        }
+        if (dest.isNotEmpty()) {
+            // TODO API
+        }
     }
 
     override fun onResume() {
