@@ -10,9 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import com.nobodysapps.greentastic.BuildConfig
@@ -20,6 +18,7 @@ import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
 import com.nobodysapps.greentastic.activity.PermissionListener
 import com.nobodysapps.greentastic.networking.ApiService
+import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import com.nobodysapps.greentastic.networking.retrofit
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,11 +29,14 @@ import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.CopyrightOverlay
+import java.util.*
 
 class MapFragment : Fragment() {
 
     var apiService: ApiService = retrofit().create(ApiService::class.java)
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
+
+    var popupWindow: ListPopupWindow? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,6 +63,18 @@ class MapFragment : Fragment() {
         mapView.overlays.add(attribution)
 
         setupSearchTextViews()
+
+        context?.let {
+            popupWindow = ListPopupWindow(it).apply {
+                isModal = true
+                setOnItemClickListener { _, view, position, id ->
+                    val selectedCompletion = (view as TextView).text.toString()
+                    Log.d(TAG, "$selectedCompletion, $position, $id")
+                    dismiss()
+                    onCompletionClicked(selectedCompletion, anchorView as EditText)
+                }
+            }
+        }
     }
 
     private fun setupSearchTextViews() {
@@ -87,26 +101,38 @@ class MapFragment : Fragment() {
         autoCompleteSingle
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                Log.d(TAG, "doOnSubscribe")
+                popupWindow?.anchorView = editTextView
+                popupWindow?.show()
+                PopupWindow(context).apply {
+                    contentView = layoutInflater.inflate(R.layout.progressbar, null)
+                }.showAsDropDown(editTextView)
+            }
             .subscribe(object : SingleObserver<List<String>> {
                 override fun onSuccess(suggestions: List<String>) {
                     Log.d(TAG, "suggestions: $suggestions")
                     context?.let {
-                        ListPopupWindow(it).apply {
-                            anchorView = editTextView
-                            val adapter =
-                                ArrayAdapter(
-                                    it,
-                                    android.R.layout.simple_list_item_1,
-                                    suggestions
-                                ) // TODO check if it works on first try
-                            setAdapter(adapter)
-                            isModal = true
-                            setOnItemClickListener { _, view, position, id ->
-                                val selectedCompletion = (view as TextView).text.toString()
-                                Log.d(TAG, "$selectedCompletion, $position, $id")
-                                onCompletionClicked(selectedCompletion, editTextView)
-                            }
-                        }.show()
+                        popupWindow?.anchorView = editTextView
+                        val adapter =
+                            ArrayAdapter(
+                                it,
+                                android.R.layout.simple_list_item_1,
+                                suggestions
+                            ) // TODO check if it works on first try
+                        popupWindow?.setAdapter(adapter)
+                        popupWindow?.show()
+//                        ListPopupWindow(it).apply {
+//                            anchorView = editTextView
+//                            setAdapter(adapter)
+//                            isModal = true
+//                            setOnItemClickListener { _, view, position, id ->
+//                                val selectedCompletion = (view as TextView).text.toString()
+//                                Log.d(TAG, "$selectedCompletion, $position, $id")
+//                                dismiss()
+//                                onCompletionClicked(selectedCompletion, editTextView)
+//                            }
+//                        }.show()
                     }
                 }
 
@@ -127,11 +153,42 @@ class MapFragment : Fragment() {
         val source = sourceEditText.text.toString()
         val dest = destinationEditText.text.toString()
         if (source.isEmpty()) {
-            // source = currentLocation
+            // source = currentLocation TODO
         }
         if (dest.isNotEmpty()) {
-            // TODO API
+            searchForRoute(source, dest)
+        } else {
+            destinationEditText.requestFocus()
         }
+    }
+
+    private fun searchForRoute(source: String, dest: String) {
+        // TODO API
+        val vehiclesSingle = apiService.getDirections(source, dest) // TODO cartype, weights
+        vehiclesSingle
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+            }
+            .doFinally {
+
+            }
+            .subscribe(object : SingleObserver<VehicleAggregate> {
+                override fun onSuccess(vehicles: VehicleAggregate) {
+                    Log.d(TAG, "vehicles: $vehicles")
+
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                    Log.d(TAG, "onSubscribe called")
+                    compositeDisposable.add(d)
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.d(TAG, "Some error $e")
+                }
+
+            })
     }
 
     override fun onResume() {

@@ -31,15 +31,25 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_flag_24dp"
-            android:contentDescription="@string/map_destination_content" />
-        <EditText
-            android:id="@+id/destinationEditText"
-            android:layout_height="wrap_content"
+            android:contentDescription="@string/map_destination_content"/>
+        <FrameLayout
             android:layout_width="match_parent"
-            android:hint="@string/map_destination_hint"
-            android:inputType="textPostalAddress"
-            android:imeOptions="actionSearch"
-            android:importantForAutofill="no" />
+            android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/destinationEditText"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:hint="@string/map_destination_hint"
+                android:inputType="textPostalAddress"
+                android:imeOptions="actionSearch"
+                android:importantForAutofill="no" />
+            <ProgressBar
+                android:id="@+id/load_progress"
+                android:layout_gravity="end|center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:indeterminate="true"/>
+        </FrameLayout>
     </LinearLayout>
     <!--suppress AndroidUnknownAttribute -->
     <org.osmdroid.views.MapView
