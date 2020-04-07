@@ -1,0 +1,6 @@
+features:
+    colourblind colors
+
+
+bugs:
+    completion geht nicht bei erstem start??
