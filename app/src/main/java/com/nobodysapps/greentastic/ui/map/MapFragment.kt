@@ -10,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import com.nobodysapps.greentastic.BuildConfig
@@ -29,14 +31,11 @@ import kotlinx.android.synthetic.main.fragment_map.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.CopyrightOverlay
-import java.util.*
 
 class MapFragment : Fragment() {
 
-    var apiService: ApiService = retrofit().create(ApiService::class.java)
+    private var apiService: ApiService = retrofit().create(ApiService::class.java)
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
-
-    var popupWindow: ListPopupWindow? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,18 +62,6 @@ class MapFragment : Fragment() {
         mapView.overlays.add(attribution)
 
         setupSearchTextViews()
-
-        context?.let {
-            popupWindow = ListPopupWindow(it).apply {
-                isModal = true
-                setOnItemClickListener { _, view, position, id ->
-                    val selectedCompletion = (view as TextView).text.toString()
-                    Log.d(TAG, "$selectedCompletion, $position, $id")
-                    dismiss()
-                    onCompletionClicked(selectedCompletion, anchorView as EditText)
-                }
-            }
-        }
     }
 
     private fun setupSearchTextViews() {
@@ -102,37 +89,29 @@ class MapFragment : Fragment() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-                Log.d(TAG, "doOnSubscribe")
-                popupWindow?.anchorView = editTextView
-                popupWindow?.show()
-                PopupWindow(context).apply {
-                    contentView = layoutInflater.inflate(R.layout.progressbar, null)
-                }.showAsDropDown(editTextView)
+                // show loading TODO
             }
             .subscribe(object : SingleObserver<List<String>> {
                 override fun onSuccess(suggestions: List<String>) {
                     Log.d(TAG, "suggestions: $suggestions")
                     context?.let {
-                        popupWindow?.anchorView = editTextView
-                        val adapter =
-                            ArrayAdapter(
-                                it,
-                                android.R.layout.simple_list_item_1,
-                                suggestions
-                            ) // TODO check if it works on first try
-                        popupWindow?.setAdapter(adapter)
-                        popupWindow?.show()
-//                        ListPopupWindow(it).apply {
-//                            anchorView = editTextView
-//                            setAdapter(adapter)
-//                            isModal = true
-//                            setOnItemClickListener { _, view, position, id ->
-//                                val selectedCompletion = (view as TextView).text.toString()
-//                                Log.d(TAG, "$selectedCompletion, $position, $id")
-//                                dismiss()
-//                                onCompletionClicked(selectedCompletion, editTextView)
-//                            }
-//                        }.show()
+                        ListPopupWindow(it).apply {
+                            anchorView = editTextView
+                            val adapter =
+                                ArrayAdapter(
+                                    it,
+                                    android.R.layout.simple_list_item_1,
+                                    suggestions
+                                ) // TODO check if it works on first try
+                            setAdapter(adapter)
+                            isModal = true
+                            setOnItemClickListener { _, view, position, id ->
+                                val selectedCompletion = (view as TextView).text.toString()
+                                Log.d(TAG, "$selectedCompletion, $position, $id")
+                                dismiss()
+                                onCompletionClicked(selectedCompletion, editTextView)
+                            }
+                        }.show()
                     }
                 }
 
