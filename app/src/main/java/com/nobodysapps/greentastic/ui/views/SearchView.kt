@@ -2,6 +2,7 @@
 
 package com.nobodysapps.greentastic.ui.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.InputType
 import android.util.AttributeSet
@@ -39,6 +40,15 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
         set(value) {
             imageView.contentDescription = value
         }
+
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var imeOptions: Int
+        get() = editText.imeOptions
+        set(value) {
+            editText.imeOptions = value
+        }
+
 
     var isLoading: Boolean
         get() = progressBar.visibility == View.VISIBLE
@@ -107,13 +117,15 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
         setupAttributes(attrs)
     }
 
+    @SuppressLint("PrivateResource")
     private fun setupAttributes(attrs: AttributeSet?) {
         val typedArray =
             context.theme.obtainStyledAttributes(attrs, R.styleable.SearchView, 0, 0)
         iconId = typedArray.getResourceId(R.styleable.SearchView_iconId, -1)
-        editText.hint = typedArray.getString(R.styleable.SearchView_hint)
+        editText.hint = typedArray.getString(R.styleable.SearchView_android_hint)
         imageContentDescription =
-            typedArray.getString(R.styleable.SearchView_contentDescription) ?: ""
+            typedArray.getString(R.styleable.SearchView_android_contentDescription) ?: ""
+        imeOptions = typedArray.getInt(R.styleable.SearchView_android_imeOptions, EditorInfo.IME_ACTION_SEARCH)
         typedArray.recycle()
     }
 

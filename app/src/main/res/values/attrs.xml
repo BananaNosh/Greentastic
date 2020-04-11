@@ -2,7 +2,8 @@
 <resources>
     <declare-styleable name="SearchView">
         <attr name="iconId" format="reference"/>
-        <attr name="hint" format="string"/>
-        <attr name="contentDescription" format="string"/>
+        <attr name="android:hint"/>
+        <attr name="android:contentDescription"/>
+        <attr name="android:imeOptions"/>
     </declare-styleable>
 </resources>
