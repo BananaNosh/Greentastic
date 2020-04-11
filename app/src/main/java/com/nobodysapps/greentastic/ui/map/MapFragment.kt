@@ -5,12 +5,10 @@ import android.content.Context
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.TextView
-import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import com.nobodysapps.greentastic.BuildConfig
 import com.nobodysapps.greentastic.R
@@ -65,7 +63,7 @@ class MapFragment : Fragment() {
 
     private fun setupSearchTextViews() {
         listOf(destinationSearchView, sourceSearchView).forEach { searchView ->
-            searchView.setListener { _, _ ->
+            val onEditTextAction = { _: Int, _: KeyEvent? ->
                 val searchString = searchView.editText.text.toString()
                 if (searchString.isNotEmpty()) {
                     showCompletionFor(searchString, searchView)
@@ -74,6 +72,11 @@ class MapFragment : Fragment() {
                     false
                 }
             }
+            val onPopupItemClicked = { text: String, _: Int ->
+                onCompletionClicked(text, searchView)
+                true
+            }
+            searchView.setListener(onEditTextAction, onPopupItemClicked)
         }
     }
 
@@ -89,23 +92,7 @@ class MapFragment : Fragment() {
                 override fun onSuccess(suggestions: List<String>) {
                     Log.d(TAG, "suggestions: $suggestions")
                     context?.let {
-                        ListPopupWindow(it).apply {
-                            anchorView = searchView
-                            val adapter =
-                                ArrayAdapter(
-                                    it,
-                                    android.R.layout.simple_list_item_1,
-                                    suggestions
-                                ) // TODO check if it works on first try
-                            setAdapter(adapter)
-                            isModal = true
-                            setOnItemClickListener { _, view, position, id ->
-                                val selectedCompletion = (view as TextView).text.toString()
-                                Log.d(TAG, "$selectedCompletion, $position, $id")
-                                dismiss()
-                                onCompletionClicked(selectedCompletion, searchView)
-                            }
-                        }.show()
+                        searchView.showPopup(suggestions)
                         searchView.isLoading = false
                     }
                 }

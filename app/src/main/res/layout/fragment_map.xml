@@ -10,14 +10,14 @@
         android:layout_height="wrap_content"
         app:iconId="@drawable/ic_location_24dp"
         app:hint="@string/map_source_hint"
-        android:contentDescription="@string/map_source_content"/>
+        app:contentDescription="@string/map_source_content"/>
     <com.nobodysapps.greentastic.ui.views.SearchView
         android:id="@+id/destinationSearchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:iconId="@drawable/ic_flag_24dp"
         app:hint="@string/map_destination_hint"
-        android:contentDescription="@string/map_destination_content"/>
+        app:contentDescription="@string/map_destination_content"/>
     <!--suppress AndroidUnknownAttribute -->
     <org.osmdroid.views.MapView
         android:id="@+id/mapView"

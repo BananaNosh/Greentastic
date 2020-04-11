@@ -1,3 +1,5 @@
+@file:Suppress("JoinDeclarationAndAssignment")
+
 package com.nobodysapps.greentastic.ui.views
 
 import android.content.Context
@@ -18,6 +20,9 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
     private val imageView: ImageView
     private val progressBar: ProgressBar
     val editText: EditText
+    private val popupWindow: ListPopupWindow
+    private val popupArray: MutableList<String> = ArrayList()
+
     @Suppress("MemberVisibilityCanBePrivate")
     var listener: Listener? = null
 
@@ -27,6 +32,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
             field = value
             if (value != -1) imageView.setImageResource(value)
         }
+
     @Suppress("MemberVisibilityCanBePrivate")
     var imageContentDescription: CharSequence
         get() = imageView.contentDescription
@@ -47,7 +53,6 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
     init {
         imageView = ImageView(context).apply {
             layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
-            setImageResource(iconId)
         }
         addView(imageView)
 
@@ -58,12 +63,17 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
                 inputType =
                     (InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS)
                 setOnEditorActionListener { _, actionId, event ->
-                    if (actionId in listOf(EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO,
+                    if (actionId in listOf(
+                            EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO,
                             EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH,
-                            EditorInfo.IME_ACTION_SEND)
+                            EditorInfo.IME_ACTION_SEND
+                        )
                         || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER)
                     ) {
-                        return@setOnEditorActionListener listener?.onEditTextConfirm(actionId, event) ?: false
+                        return@setOnEditorActionListener listener?.onEditTextConfirm(
+                            actionId,
+                            event
+                        ) ?: false
                     }
                     false
                 }
@@ -84,6 +94,16 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
             addView(progressBar)
         })
         gravity = Gravity.CENTER_VERTICAL
+
+        popupWindow = ListPopupWindow(context).apply {
+            isModal = true
+            setAdapter(ArrayAdapter(context, android.R.layout.simple_list_item_1, popupArray))
+            anchorView = editText
+            setOnItemClickListener { _, view, position, _ ->
+                val selectedText = (view as TextView).text.toString()
+                if (listener?.onPopupItemClicked(selectedText, position) == true) dismiss()
+            }
+        }
         setupAttributes(attrs)
     }
 
@@ -92,18 +112,33 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
             context.theme.obtainStyledAttributes(attrs, R.styleable.SearchView, 0, 0)
         iconId = typedArray.getResourceId(R.styleable.SearchView_iconId, -1)
         editText.hint = typedArray.getString(R.styleable.SearchView_hint)
-        imageContentDescription = typedArray.getString(R.styleable.SearchView_contentDescription) ?: ""
+        imageContentDescription =
+            typedArray.getString(R.styleable.SearchView_contentDescription) ?: ""
         typedArray.recycle()
     }
 
-    fun setListener(listener: (Int, KeyEvent?) -> Boolean) {
-        this.listener = object: Listener {
-            override fun onEditTextConfirm(actionId: Int, event: KeyEvent?) = listener(actionId, event)
+    fun setListener(
+        onEditTextAction: (actionId: Int, event: KeyEvent?) -> Boolean,
+        onPopupItemClicked: (text: String, position: Int) -> Boolean
+    ) {
+        this.listener = object : Listener {
+            override fun onEditTextConfirm(actionId: Int, event: KeyEvent?) =
+                onEditTextAction(actionId, event)
+
+            override fun onPopupItemClicked(text: String, position: Int) =
+                onPopupItemClicked(text, position)
         }
+    }
+
+    fun showPopup(items: List<String>) {
+        popupArray.clear()
+        popupArray.addAll(items)
+        popupWindow.show()
     }
 
     interface Listener {
         fun onEditTextConfirm(actionId: Int, event: KeyEvent?): Boolean
+        fun onPopupItemClicked(text: String, position: Int): Boolean
     }
 
     companion object {
