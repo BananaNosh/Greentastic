@@ -2,55 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
-    <LinearLayout
+    <com.nobodysapps.greentastic.ui.views.SearchView
+        android:id="@+id/sourceSearchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_location_24dp"
-            android:contentDescription="@string/map_source_content" />
-        <EditText
-            android:id="@+id/sourceEditText"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:hint="@string/map_source_hint"
-            android:inputType="textPostalAddress"
-            android:imeOptions="actionSearch"
-            android:importantForAutofill="no" />
-    </LinearLayout>
-    <LinearLayout
+        app:iconId="@drawable/ic_location_24dp"
+        app:hint="@string/map_source_hint"
+        android:contentDescription="@string/map_source_content"/>
+    <com.nobodysapps.greentastic.ui.views.SearchView
+        android:id="@+id/destinationSearchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_flag_24dp"
-            android:contentDescription="@string/map_destination_content"/>
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <EditText
-                android:id="@+id/destinationEditText"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:hint="@string/map_destination_hint"
-                android:inputType="textPostalAddress"
-                android:imeOptions="actionSearch"
-                android:importantForAutofill="no" />
-            <ProgressBar
-                android:id="@+id/load_progress"
-                android:layout_gravity="end|center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:indeterminate="true"/>
-        </FrameLayout>
-    </LinearLayout>
+        app:iconId="@drawable/ic_flag_24dp"
+        app:hint="@string/map_destination_hint"
+        android:contentDescription="@string/map_destination_content"/>
     <!--suppress AndroidUnknownAttribute -->
     <org.osmdroid.views.MapView
         android:id="@+id/mapView"

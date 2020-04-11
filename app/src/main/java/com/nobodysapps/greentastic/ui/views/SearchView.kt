@@ -1,0 +1,112 @@
+package com.nobodysapps.greentastic.ui.views
+
+import android.content.Context
+import android.text.InputType
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.KeyEvent
+import android.view.KeyEvent.ACTION_DOWN
+import android.view.KeyEvent.KEYCODE_ENTER
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.*
+import com.nobodysapps.greentastic.R
+
+class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+
+    private val imageView: ImageView
+    private val progressBar: ProgressBar
+    val editText: EditText
+    @Suppress("MemberVisibilityCanBePrivate")
+    var listener: Listener? = null
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var iconId: Int = -1
+        set(value) {
+            field = value
+            if (value != -1) imageView.setImageResource(value)
+        }
+    @Suppress("MemberVisibilityCanBePrivate")
+    var imageContentDescription: CharSequence
+        get() = imageView.contentDescription
+        set(value) {
+            imageView.contentDescription = value
+        }
+
+    var isLoading: Boolean
+        get() = progressBar.visibility == View.VISIBLE
+        set(value) {
+            if (value) {
+                progressBar.visibility = View.VISIBLE
+            } else {
+                progressBar.visibility = View.GONE
+            }
+        }
+
+    init {
+        imageView = ImageView(context).apply {
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            setImageResource(iconId)
+        }
+        addView(imageView)
+
+        addView(FrameLayout(context).apply {
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            editText = EditText(context).apply {
+                layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                inputType =
+                    (InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS)
+                setOnEditorActionListener { _, actionId, event ->
+                    if (actionId in listOf(EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO,
+                            EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH,
+                            EditorInfo.IME_ACTION_SEND)
+                        || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER)
+                    ) {
+                        return@setOnEditorActionListener listener?.onEditTextConfirm(actionId, event) ?: false
+                    }
+                    false
+                }
+            }
+            addView(editText)
+
+            progressBar = ProgressBar(context).apply {
+                val progressHeight = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    PROGRESSBAR_HEIGHT_DP,
+                    resources.displayMetrics
+                ).toInt()
+                layoutParams = FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, progressHeight)
+                    .apply { gravity = Gravity.END or Gravity.CENTER_VERTICAL }
+                isIndeterminate = true
+                visibility = View.GONE
+            }
+            addView(progressBar)
+        })
+        gravity = Gravity.CENTER_VERTICAL
+        setupAttributes(attrs)
+    }
+
+    private fun setupAttributes(attrs: AttributeSet?) {
+        val typedArray =
+            context.theme.obtainStyledAttributes(attrs, R.styleable.SearchView, 0, 0)
+        iconId = typedArray.getResourceId(R.styleable.SearchView_iconId, -1)
+        editText.hint = typedArray.getString(R.styleable.SearchView_hint)
+        imageContentDescription = typedArray.getString(R.styleable.SearchView_contentDescription) ?: ""
+        typedArray.recycle()
+    }
+
+    fun setListener(listener: (Int, KeyEvent?) -> Boolean) {
+        this.listener = object: Listener {
+            override fun onEditTextConfirm(actionId: Int, event: KeyEvent?) = listener(actionId, event)
+        }
+    }
+
+    interface Listener {
+        fun onEditTextConfirm(actionId: Int, event: KeyEvent?): Boolean
+    }
+
+    companion object {
+        private const val PROGRESSBAR_HEIGHT_DP = 30f
+    }
+}
