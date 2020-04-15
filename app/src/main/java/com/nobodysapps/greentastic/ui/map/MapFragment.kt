@@ -1,9 +1,12 @@
 package com.nobodysapps.greentastic.ui.map
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -14,6 +17,8 @@ import com.nobodysapps.greentastic.BuildConfig
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
 import com.nobodysapps.greentastic.activity.PermissionListener
+import com.nobodysapps.greentastic.error_handling.NoGPSError
+import com.nobodysapps.greentastic.error_handling.NoLocationPermissionError
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import com.nobodysapps.greentastic.networking.retrofit
@@ -32,6 +37,14 @@ class MapFragment : Fragment() {
 
     private var apiService: ApiService = retrofit().create(ApiService::class.java)
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private var searchWasStarted: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedInstanceState?.let {
+            searchWasStarted = it.getBoolean(SEARCH_STARTED_KEY)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,12 +101,14 @@ class MapFragment : Fragment() {
             .doOnSubscribe {
                 searchView.isLoading = true
             }
+            .doFinally {
+                searchView.isLoading = false
+            }
             .subscribe(object : SingleObserver<List<String>> {
                 override fun onSuccess(suggestions: List<String>) {
                     Log.d(TAG, "suggestions: $suggestions")
                     context?.let {
                         searchView.showPopup(suggestions)
-                        searchView.isLoading = false
                     }
                 }
 
@@ -103,7 +118,7 @@ class MapFragment : Fragment() {
                 }
 
                 override fun onError(e: Throwable) {
-                    Log.d(TAG, "Some error $e")
+                    Log.d(TAG, "Some error $e") //TODO add error message in dialog
                 }
 
             })
@@ -113,11 +128,12 @@ class MapFragment : Fragment() {
         searchView.editText.setText(selectedCompletion)
         val source = sourceSearchView.editText.text.toString()
         val dest = destinationSearchView.editText.text.toString()
-        if (source.isEmpty()) {
-            // source = currentLocation TODO
-        }
         if (dest.isNotEmpty()) {
-            searchForRoute(source, dest)
+            if (source.isEmpty()) {
+                // source = currentLocation TODO
+            } else {
+                searchForRoute(source, dest)
+            }
         } else {
             destinationSearchView.editText.requestFocus()
         }
@@ -155,7 +171,16 @@ class MapFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        getCurrentLocation({ location ->  // TODO remove
+            Log.d(TAG, "location $location")
+        }, { error ->
+            Log.d(TAG, "location error $error")
+        })
+
         checkStoragePermission()
+        if (searchWasStarted) {
+            // TODO(implement)
+        }
     }
 
     private fun checkStoragePermission() {
@@ -175,6 +200,71 @@ class MapFragment : Fragment() {
         )
     }
 
+    private fun getCurrentLocation(
+        onSuccess: (Pair<Double, Double>) -> Unit,
+        onFailure: (Error) -> Unit
+    ) {
+        context?.let {
+            val locationManager = it.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                askForGPS(onFailure)
+            } else {
+                checkLocationPermission({
+                    val lastKnownLocation =
+                        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                    lastKnownLocation?.let {
+                        onSuccess(Pair(it.latitude, it.longitude))
+                    } ?: onFailure(Error("No location found"))
+                }, onFailure)
+            }
+        }
+    }
+
+    private fun askForGPS(onFailure: (Error) -> Unit) {
+        val builder = AlertDialog.Builder(context)
+        builder.setMessage(getString(R.string.dialog_enable_gps_message))
+            .setCancelable(false)  //TODO string
+            .setPositiveButton(
+                android.R.string.yes
+            ) { dialog, which ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton(
+                android.R.string.no
+            ) { dialog, _ ->
+                onFailure(NoGPSError())
+                dialog.cancel()
+            }
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
+
+
+    private fun checkLocationPermission(
+        onSuccess: () -> Unit,
+        onFailure: (Error) -> Unit
+    ) {
+        val listener = object : PermissionListener {
+            override fun onPermissionGranted(permission: String) {
+                onSuccess()
+            }
+
+            override fun onPermissionDenied(permission: String) {
+                onFailure(NoLocationPermissionError())  // TODO replace error with general ErrorType
+            }
+        }
+        (activity as GreentasticActivity).withPermission(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            listener,
+            null  // explication is not necessary here
+        )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(SEARCH_STARTED_KEY, searchWasStarted)
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onPause() {
         super.onPause()
         mapView.onPause()
@@ -183,5 +273,6 @@ class MapFragment : Fragment() {
 
     companion object {
         const val TAG = "MapFragment"
+        private const val SEARCH_STARTED_KEY = "searchStarted"
     }
 }
