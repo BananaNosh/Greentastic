@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.search.SearchFragment"
     android:orientation="vertical">
+
     <com.nobodysapps.greentastic.ui.views.SearchView
         android:id="@+id/sourceSearchView"
         android:layout_width="match_parent"
@@ -21,11 +23,10 @@
         android:hint="@string/map_destination_hint"
         android:contentDescription="@string/map_destination_content"
         tools:ignore="ContentDescription" />
-    <!--suppress AndroidUnknownAttribute -->
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        tilesource="Mapnik" />
+
+    <FrameLayout
+        android:id="@+id/fragment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>
