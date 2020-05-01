@@ -4,10 +4,10 @@ import android.app.Application
 import com.nobodysapps.greentastic.dependencyInjection.ApplicationComponent
 import com.nobodysapps.greentastic.dependencyInjection.DaggerApplicationComponent
 
-class GreentasticApplication: Application() {
+open class GreentasticApplication: Application() {
     val appComponent: ApplicationComponent by lazy {
         initializeComponent()
     }
 
-    private fun initializeComponent() = DaggerApplicationComponent.factory().create(applicationContext)
+    open fun initializeComponent() = DaggerApplicationComponent.factory().create(applicationContext)
 }
