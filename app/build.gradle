@@ -20,8 +20,25 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+        mock {
+            initWith debug
+            debuggable = true
+            signingConfig signingConfigs.debug
         }
     }
+    sourceSets {
+        mock {
+//            java {
+//                exclude "../main/com/nobodysapps/greentastic/dependencyInjection/**"
+//            }
+        }
+        androidTest {
+            java.srcDir "src/mock/java"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

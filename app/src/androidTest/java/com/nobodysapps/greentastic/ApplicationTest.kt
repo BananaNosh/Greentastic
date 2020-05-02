@@ -22,11 +22,18 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.platform.app.InstrumentationRegistry
 import com.nobodysapps.greentastic.activity.MainActivity
-import com.nobodysapps.greentastic.util.waitUntilVisible
-import org.hamcrest.Matchers.anything
-import org.hamcrest.Matchers.endsWith
+import com.nobodysapps.greentastic.application.GreentasticApplication
+import com.nobodysapps.greentastic.dependencyInjection.TestAppComponent
+import com.nobodysapps.greentastic.networking.ApiService
+import io.reactivex.Single
+import org.hamcrest.Matchers.*
+import org.junit.Before
 import org.junit.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.Mockito
+import javax.inject.Inject
 
 
 class ApplicationTest {
@@ -39,15 +46,14 @@ class ApplicationTest {
         onView(withId(R.id.sourceSearchView)).check(matches(isDisplayed()))
         onView(withId(R.id.destinationSearchView)).check(matches(isDisplayed()))
 
-//        onView(withHint("current location")).check(matches(hasFocus()))
-//        onView(withId(R.id.sourceSearchView)).perform(typeText("zurich"))
         onView(withHint("current location")).perform(typeText("zurich"), pressImeActionButton())
+        onView(withClassName(endsWith("PopupDecorView"))).waitUntilVisible(500).check(matches(isDisplayed()))
 //        onData(allOf(`is`(instanceOf(String::class.java)),`is`("Zürich, Switzerland"))).perform(click())
-        onView(withClassName(endsWith("PopupDecorView"))).waitUntilVisible(2000).check(matches(isDisplayed()))
-//        onView(withText("Zürich, Switzerland")).waitUntilVisible(2000)
-//        onView(withText("Zürich, Switzerland")).inRoot(isPlatform)
         onData(anything()).atPosition(0).perform(click())
-//        onView(nthChildOf(anyOf(withId(android.R.id.title)), 1))
+        onView(withId(R.id.sourceSearchView)).check(matches(not(hasFocus())))
+        onView(withId(R.id.destinationSearchView)).check(matches(hasFocus()))
+        onView(withHint("destination")).perform(typeText("frankfurt"), pressImeActionButton())
+        onView(withClassName(endsWith("PopupDecorView"))).waitUntilVisible(500).check(matches(isDisplayed()))
         Thread.sleep(2000)
 
 //        onView(withId(R.id.username)).perform(typeText("username"), closeSoftKeyboard())

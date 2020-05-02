@@ -1,4 +1,4 @@
-package com.nobodysapps.greentastic.error_handling
+package com.nobodysapps.greentastic.errorHandling
 
 open class LocationError(message: String?): Error(message)
 

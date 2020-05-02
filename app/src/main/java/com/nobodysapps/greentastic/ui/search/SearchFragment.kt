@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -14,16 +13,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
 import com.nobodysapps.greentastic.activity.PermissionListener
 import com.nobodysapps.greentastic.application.GreentasticApplication
-import com.nobodysapps.greentastic.error_handling.NoGPSError
-import com.nobodysapps.greentastic.error_handling.NoLocationPermissionError
+import com.nobodysapps.greentastic.errorHandling.NoGPSError
+import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import com.nobodysapps.greentastic.ui.map.MapFragment
@@ -92,6 +89,7 @@ class SearchFragment : Fragment() {
         })
 
         listOf(destinationSearchView, sourceSearchView).forEach { searchView ->
+            // TODO change focus to second searchView only after completion was clicked
             val onEditTextAction = { _: Int, _: KeyEvent? ->
                 val searchString = searchView.editText.text.toString()
                 if (searchString.isNotEmpty()) {
