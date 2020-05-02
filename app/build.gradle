@@ -29,10 +29,12 @@ android {
         }
     }
     sourceSets {
-        mock {
-//            java {
-//                exclude "../main/com/nobodysapps/greentastic/dependencyInjection/**"
-//            }
+        String commonDir = 'src/common/java'
+        debug {
+            java.srcDir commonDir
+        }
+        release {
+            java.srcDir commonDir
         }
         androidTest {
             java.srcDir "src/mock/java"
