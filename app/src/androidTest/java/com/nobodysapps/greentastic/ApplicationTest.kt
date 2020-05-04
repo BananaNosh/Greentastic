@@ -54,6 +54,7 @@ class ApplicationTest {
         onView(withId(R.id.destinationSearchView)).check(matches(hasFocus()))
         onView(withHint("destination")).perform(typeText("frankfurt"), pressImeActionButton())
         onView(withClassName(endsWith("PopupDecorView"))).waitUntilVisible(500).check(matches(isDisplayed()))
+        onData(anything()).atPosition(2).perform(click())
         Thread.sleep(2000)
 
 //        onView(withId(R.id.username)).perform(typeText("username"), closeSoftKeyboard())

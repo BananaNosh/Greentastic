@@ -1,5 +1,6 @@
 package com.nobodysapps.greentastic.networking
 
+import com.nobodysapps.greentastic.networking.model.Vehicle
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import dagger.Module
 import dagger.Provides
@@ -7,7 +8,7 @@ import io.reactivex.Single
 
 
 @Module
-class TestApiServiceModule {
+class FakeApiServiceModule {
 
     @Provides
     fun provideApiService(): ApiService {
@@ -46,9 +47,49 @@ class TestApiServiceModule {
                 carType: String?,
                 weights: List<String>?
             ): Single<VehicleAggregate> {
-                TODO("Not yet implemented")
+                return Single.create { emitter ->
+                    emitter.onSuccess(
+                        VehicleAggregate(
+                            Vehicle(
+                                12749.0,
+                                listOf(173, 255, 47),
+                                0.86,
+                                emptyList(),
+                                76499.0,
+                                listOf(264, 184, 60),
+                                0.43,
+                                1.94,
+                                listOf(50, 205, 50),
+                                0.75,
+                                38.87,
+                                listOf(255, 120, 71),
+                                0.35,
+                                0.8518518518518521,
+                                listOf(173, 255, 47),
+                                0.0,
+                                listOf(50, 205, 50),
+                                1.0
+                            ),
+                            fakeVehicle,
+                            fakeVehicle,
+                            fakeVehicle,
+                            fakeVehicle,
+                            fakeVehicle
+                        )
+                    )
+                }
             }
 
         }
     }
 }
+
+private val fakeVehicle = Vehicle(
+    10.0, listOf(255, 255, 255), 0.86,
+    emptyList(),
+    76499.0, listOf(100, 184, 60),
+    0.2,
+    1.94, listOf(50, 205, 50),
+    0.75, 38.87, listOf(255, 120, 71), 0.35,
+    0.8518518518518521, listOf(173, 255, 47), 0.0, listOf(50, 205, 50), 1.0
+)
