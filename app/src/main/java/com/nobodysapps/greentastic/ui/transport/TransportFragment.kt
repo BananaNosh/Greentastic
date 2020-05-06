@@ -1,4 +1,4 @@
-package com.nobodysapps.greentastic.ui
+package com.nobodysapps.greentastic.ui.transport
 
 import android.content.Context
 import android.os.Bundle
@@ -47,7 +47,11 @@ class TransportFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = TransportRecyclerViewAdapter(DummyContent.ITEMS, listener)
+                adapter =
+                    TransportRecyclerViewAdapter(
+                        DummyContent.ITEMS,
+                        listener
+                    )
             }
         }
         return view

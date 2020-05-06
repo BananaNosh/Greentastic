@@ -7,8 +7,9 @@ import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
+@Suppress("unused")
 @Singleton
-@Component(modules = [FakeApiServiceModule::class])
+@Component(modules = [ViewModelModule::class, FakeApiServiceModule::class])
 interface ApplicationComponent {
 
     @Component.Factory

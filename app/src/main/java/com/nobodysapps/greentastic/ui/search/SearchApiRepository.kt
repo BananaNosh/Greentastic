@@ -13,7 +13,9 @@ class SearchApiRepository @Inject constructor(val apiService: ApiService){
 
 
     var sourceCompletion: MutableLiveData<List<String>> = MutableLiveData()
+    var sourceIsLoading: MutableLiveData<Boolean> = MutableLiveData()
     var destCompletion: MutableLiveData<List<String>> = MutableLiveData()
+    var destIsLoading: MutableLiveData<Boolean> = MutableLiveData()
 
 
     fun loadCompletion(searchString: String, searchViewType: Int) {

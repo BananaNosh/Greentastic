@@ -9,12 +9,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-
+import androidx.lifecycle.ViewModelProvider
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
 import com.nobodysapps.greentastic.activity.PermissionListener
@@ -23,6 +23,7 @@ import com.nobodysapps.greentastic.errorHandling.NoGPSError
 import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
+import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.ui.map.MapFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
 import io.reactivex.SingleObserver
@@ -38,16 +39,24 @@ class SearchFragment : Fragment() {
 
     @Inject
     lateinit var apiService: ApiService
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var searchWasStarted: Boolean = false
-    @Inject
-    lateinit var viewModel: SearchViewModel
+
+    private lateinit var viewModel: SearchViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         savedInstanceState?.let {
             searchWasStarted = it.getBoolean(SEARCH_STARTED_KEY)
         }
+        viewModel = ViewModelProvider(this, viewModelFactory).get(
+            SearchViewModel::class.java
+        )
+        Log.d(TAG, viewModel.toString())
     }
 
     override fun onCreateView(
@@ -75,27 +84,30 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupSearchTextViews() {
-        viewModel.sourceString.observe(viewLifecycleOwner, Observer { t ->
-            sourceSearchView.editText.setText(t)
-        })
-        viewModel.destString.observe(viewLifecycleOwner, Observer { t ->
-            destinationSearchView.editText.setText(t)
-        })
-        viewModel.sourceCompletion.observe(viewLifecycleOwner, Observer { completions ->
-            sourceSearchView.showPopup(completions)
-        })
-        viewModel.destCompletion.observe(viewLifecycleOwner, Observer { completions ->
-            destinationSearchView.showPopup(completions)
-        })
-
-        listOf(destinationSearchView, sourceSearchView).forEach { searchView ->
+        listOf(viewModel.sourceData, viewModel.destData).zip(
+            listOf(
+                sourceSearchView,
+                destinationSearchView
+            )
+        ).forEach { dataViewPair ->
+            val searchView = dataViewPair.second
+            dataViewPair.first.searchString.observe(viewLifecycleOwner, Observer { t ->
+                if (t != searchView.editText.text.toString()) {
+                    searchView.editText.setText(t)
+                }
+            })
+            dataViewPair.first.completionList.observe(viewLifecycleOwner, Observer { completions ->
+                searchView.showPopup(completions)
+            })
             // TODO change focus to second searchView only after completion was clicked
             val onEditTextAction = { _: Int, _: KeyEvent? ->
                 val searchString = searchView.editText.text.toString()
                 if (searchString.isNotEmpty()) {
-                    viewModel.repository.loadCompletion(searchString,
+                    viewModel.repository.loadCompletion(
+                        searchString,
                         if (searchView == destinationSearchView) SearchApiRepository.SEARCH_VIEW_TYPE_DEST
-                        else SearchApiRepository.SEARCH_VIEW_TYPE_SOURCE)
+                        else SearchApiRepository.SEARCH_VIEW_TYPE_SOURCE
+                    )
                     true
                 } else {
                     false
@@ -105,7 +117,10 @@ class SearchFragment : Fragment() {
                 onCompletionClicked(text, searchView)
                 true
             }
-            searchView.setListener(onEditTextAction, onPopupItemClicked)
+            val onTextChanged = { text: String ->
+                dataViewPair.first.searchString.value = text
+            }
+            searchView.setListener(onEditTextAction, onPopupItemClicked, onTextChanged)
         }
     }
 
@@ -141,9 +156,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun onCompletionClicked(selectedCompletion: String, searchView: SearchView) {
-        searchView.editText.setText(selectedCompletion)
-        val dest = destinationSearchView.editText.text.toString()
-        if (dest.isNotEmpty()) {
+        when (searchView) {
+            sourceSearchView -> viewModel.sourceData
+            else -> viewModel.destData
+        }.searchString.value = selectedCompletion
+        val dest = viewModel.destData.searchString.value
+        if (dest != null && dest.isNotEmpty()) {
             searchWasStarted = true
             getSourceAndDestAndSearch()
         } else {

@@ -1,4 +1,4 @@
-package com.nobodysapps.greentastic.ui
+package com.nobodysapps.greentastic.ui.transport
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import com.nobodysapps.greentastic.R
 
 
-import com.nobodysapps.greentastic.ui.TransportFragment.OnListFragmentInteractionListener
+import com.nobodysapps.greentastic.ui.transport.TransportFragment.OnListFragmentInteractionListener
 import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
 
 import kotlinx.android.synthetic.main.transport_list_item.view.*

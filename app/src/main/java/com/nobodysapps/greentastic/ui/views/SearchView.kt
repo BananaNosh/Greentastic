@@ -4,7 +4,9 @@ package com.nobodysapps.greentastic.ui.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -72,21 +74,8 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
                 layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
                 inputType =
                     (InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS)
-                setOnEditorActionListener { _, actionId, event ->
-                    if (actionId in listOf(
-                            EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO,
-                            EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH,
-                            EditorInfo.IME_ACTION_SEND
-                        )
-                        || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER)
-                    ) {
-                        return@setOnEditorActionListener listener?.onEditTextConfirm(
-                            actionId,
-                            event
-                        ) ?: false
-                    }
-                    false
-                }
+                addActionListener()
+                addTextWatcher()
             }
             addView(editText)
 
@@ -117,6 +106,47 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
         setupAttributes(attrs)
     }
 
+    private fun EditText.addTextWatcher() {
+        addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {}
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                listener?.onTextChanged(s.toString())
+            }
+
+        })
+    }
+
+    private fun EditText.addActionListener() {
+        setOnEditorActionListener { _, actionId, event ->
+            if (actionId in listOf(
+                    EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_GO,
+                    EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_SEARCH,
+                    EditorInfo.IME_ACTION_SEND
+                )
+                || (event != null && event.action == ACTION_DOWN && event.keyCode == KEYCODE_ENTER)
+            ) {
+                return@setOnEditorActionListener listener?.onEditTextConfirm(
+                    actionId,
+                    event
+                ) ?: false
+            }
+            false
+        }
+    }
+
     @SuppressLint("PrivateResource")
     private fun setupAttributes(attrs: AttributeSet?) {
         val typedArray =
@@ -131,9 +161,14 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
 
     fun setListener(
         onEditTextAction: (actionId: Int, event: KeyEvent?) -> Boolean,
-        onPopupItemClicked: (text: String, position: Int) -> Boolean
+        onPopupItemClicked: (text: String, position: Int) -> Boolean,
+        onTextChanged: (text: String) -> Unit
     ) {
         this.listener = object : Listener {
+            override fun onTextChanged(text: String) {
+                onTextChanged(text)
+            }
+
             override fun onEditTextConfirm(actionId: Int, event: KeyEvent?) =
                 onEditTextAction(actionId, event)
 
@@ -149,6 +184,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
     }
 
     interface Listener {
+        fun onTextChanged(text: String)
         fun onEditTextConfirm(actionId: Int, event: KeyEvent?): Boolean
         fun onPopupItemClicked(text: String, position: Int): Boolean
     }
