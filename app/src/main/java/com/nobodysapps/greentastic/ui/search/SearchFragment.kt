@@ -12,6 +12,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +34,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.map_fragment.*
 import kotlinx.android.synthetic.main.search_fragment.*
+import java.util.*
 import javax.inject.Inject
 
 class SearchFragment : Fragment() {
@@ -45,6 +47,7 @@ class SearchFragment : Fragment() {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var searchWasStarted: Boolean = false
+    private var popupWindow: ListPopupWindow? = null
 
     private lateinit var viewModel: SearchViewModel
 
@@ -71,6 +74,7 @@ class SearchFragment : Fragment() {
 
         replaceFragment(MapFragment::class.java)
         setupSearchTextViews()
+        Log.d(TAG, sourceSearchView.toString())
     }
 
     override fun onAttach(context: Context) {
@@ -99,6 +103,10 @@ class SearchFragment : Fragment() {
             dataViewPair.first.completionList.observe(viewLifecycleOwner, Observer { completions ->
                 searchView.showPopup(completions)
             })
+            dataViewPair.first.isLoading.observe(viewLifecycleOwner, Observer { loading ->
+                Log.d(TAG, "loading: $loading")
+                searchView.isLoading = loading
+            })
             // TODO change focus to second searchView only after completion was clicked
             val onEditTextAction = { _: Int, _: KeyEvent? ->
                 val searchString = searchView.editText.text.toString()
@@ -124,42 +132,13 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun showCompletionFor(searchString: String, searchView: SearchView) {
-        val autoCompleteSingle = apiService.getAutoComplete(searchString)
-        autoCompleteSingle
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                searchView.isLoading = true
-            }
-            .doFinally {
-                searchView.isLoading = false
-            }
-            .subscribe(object : SingleObserver<List<String>> {
-                override fun onSuccess(suggestions: List<String>) {
-                    Log.d(TAG, "suggestions: $suggestions")
-                    context?.let {
-                        searchView.showPopup(suggestions)
-                    }
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                    Log.d(TAG, "onSubscribe called")
-                    compositeDisposable.add(d)
-                }
-
-                override fun onError(e: Throwable) {
-                    Log.d(TAG, "Some error $e") //TODO add error message in dialog
-                }
-
-            })
-    }
-
     private fun onCompletionClicked(selectedCompletion: String, searchView: SearchView) {
-        when (searchView) {
+        val searchViewData = when (searchView) {
             sourceSearchView -> viewModel.sourceData
             else -> viewModel.destData
-        }.searchString.value = selectedCompletion
+        }
+        searchViewData.searchString.value = selectedCompletion
+        searchViewData.completionList.value = Collections.emptyList()
         val dest = viewModel.destData.searchString.value
         if (dest != null && dest.isNotEmpty()) {
             searchWasStarted = true
@@ -269,7 +248,7 @@ class SearchFragment : Fragment() {
             .setCancelable(false)  //TODO string
             .setPositiveButton(
                 android.R.string.yes
-            ) { dialog, which ->
+            ) { _, _ ->
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
             .setNegativeButton(
@@ -315,6 +294,12 @@ class SearchFragment : Fragment() {
             Log.d(TAG, "composite disposed")
             compositeDisposable.dispose()
         }
+    }
+
+    override fun onStop() {
+        sourceSearchView.dismissPopup()
+        destinationSearchView.dismissPopup()
+        super.onStop()
     }
 
     companion object {

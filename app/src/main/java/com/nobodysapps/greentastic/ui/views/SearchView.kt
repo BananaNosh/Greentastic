@@ -16,6 +16,7 @@ import android.view.KeyEvent.KEYCODE_ENTER
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
+import androidx.appcompat.widget.ListPopupWindow
 import com.nobodysapps.greentastic.R
 
 class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
@@ -94,13 +95,13 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
         })
         gravity = Gravity.CENTER_VERTICAL
 
-        popupWindow = ListPopupWindow(context).apply {
+        popupWindow = ListPopupWindow(editText.context).apply {
             isModal = true
             setAdapter(ArrayAdapter(context, android.R.layout.simple_list_item_1, popupArray))
             anchorView = editText
             setOnItemClickListener { _, view, position, _ ->
                 val selectedText = (view as TextView).text.toString()
-                if (listener?.onPopupItemClicked(selectedText, position) == true) dismiss()
+                if (listener?.onPopupItemClicked(selectedText, position) == true) dismissPopupView()
             }
         }
         setupAttributes(attrs)
@@ -177,10 +178,30 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
         }
     }
 
-    fun showPopup(items: List<String>) {
+    private fun dismissPopupView() {
         popupArray.clear()
+        popupWindow.dismiss()
+    }
+
+    fun showPopup(items: List<String>) {
+//        Log.d("SearchView", lifecycleOwner.lifecycle.currentState.name)
+////        if (lifecycleOwner.lifecycle.currentState !in listOf(Lifecycle.State.RESUMED)) {
+////            return
+////        }
+//        lifecycleOwner.lifecycle.addObserver(object: LifecycleObserver {
+//            @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+//            fun onPaused() {
+//                dismissPopupView()
+//            }
+//        })
         popupArray.addAll(items)
-        popupWindow.show()
+        post {
+            popupWindow.show()
+        }
+    }
+
+    fun dismissPopup() {
+        dismissPopupView()
     }
 
     interface Listener {

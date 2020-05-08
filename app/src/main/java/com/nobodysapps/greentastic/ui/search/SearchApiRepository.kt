@@ -24,19 +24,25 @@ class SearchApiRepository @Inject constructor(val apiService: ApiService){
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
-//                searchView.isLoading = true
+                when (searchViewType) {
+                    SEARCH_VIEW_TYPE_SOURCE -> sourceIsLoading
+                    else -> destIsLoading
+                }.value = true
             }
             .doFinally {
-//                searchView.isLoading = false
+                when (searchViewType) {
+                    SEARCH_VIEW_TYPE_SOURCE -> sourceIsLoading
+                    else -> destIsLoading
+                }.value = false
             }
             .subscribe(object : SingleObserver<List<String>> {
                 override fun onSuccess(suggestions: List<String>) {
                     Log.d(SearchFragment.TAG, "suggestions: $suggestions")
 
-                    if(searchViewType == 0)
-                        sourceCompletion.value = suggestions
-                    else
-                        destCompletion.value = suggestions
+                    when (searchViewType) {
+                        SEARCH_VIEW_TYPE_SOURCE -> sourceCompletion
+                        else -> destCompletion
+                    }.value = suggestions
                 }
 
                 override fun onSubscribe(d: Disposable) {
