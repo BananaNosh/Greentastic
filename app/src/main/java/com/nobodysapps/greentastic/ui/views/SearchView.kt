@@ -103,6 +103,12 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
                 val selectedText = (view as TextView).text.toString()
                 if (listener?.onPopupItemClicked(selectedText, position) == true) dismissPopupView()
             }
+            setOnDismissListener {
+                if (popupArray.isNotEmpty()) {
+                    listener?.onNoItemClicked()
+                    popupArray.clear()
+                }
+            }
         }
         setupAttributes(attrs)
     }
@@ -163,6 +169,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
     fun setListener(
         onEditTextAction: (actionId: Int, event: KeyEvent?) -> Boolean,
         onPopupItemClicked: (text: String, position: Int) -> Boolean,
+        onNoPopupItemClicked: () -> Unit,
         onTextChanged: (text: String) -> Unit
     ) {
         this.listener = object : Listener {
@@ -175,6 +182,10 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
 
             override fun onPopupItemClicked(text: String, position: Int) =
                 onPopupItemClicked(text, position)
+
+            override fun onNoItemClicked() {
+                onNoPopupItemClicked()
+            }
         }
     }
 
@@ -184,16 +195,6 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
     }
 
     fun showPopup(items: List<String>) {
-//        Log.d("SearchView", lifecycleOwner.lifecycle.currentState.name)
-////        if (lifecycleOwner.lifecycle.currentState !in listOf(Lifecycle.State.RESUMED)) {
-////            return
-////        }
-//        lifecycleOwner.lifecycle.addObserver(object: LifecycleObserver {
-//            @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-//            fun onPaused() {
-//                dismissPopupView()
-//            }
-//        })
         popupArray.addAll(items)
         post {
             popupWindow.show()
@@ -208,6 +209,7 @@ class SearchView(context: Context, attrs: AttributeSet? = null) : LinearLayout(c
         fun onTextChanged(text: String)
         fun onEditTextConfirm(actionId: Int, event: KeyEvent?): Boolean
         fun onPopupItemClicked(text: String, position: Int): Boolean
+        fun onNoItemClicked()
     }
 
     companion object {

@@ -12,7 +12,6 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.ListPopupWindow
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -47,7 +46,6 @@ class SearchFragment : Fragment() {
 
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var searchWasStarted: Boolean = false
-    private var popupWindow: ListPopupWindow? = null
 
     private lateinit var viewModel: SearchViewModel
 
@@ -125,10 +123,15 @@ class SearchFragment : Fragment() {
                 onCompletionClicked(text, searchView)
                 true
             }
+            val onNoPopupItemClicked: () -> Unit = {
+                dataViewPair.first.completionList.value?.firstOrNull()?.let {
+                    onCompletionClicked(it, searchView)
+                }
+            }
             val onTextChanged = { text: String ->
                 dataViewPair.first.searchString.value = text
             }
-            searchView.setListener(onEditTextAction, onPopupItemClicked, onTextChanged)
+            searchView.setListener(onEditTextAction, onPopupItemClicked, onNoPopupItemClicked, onTextChanged)
         }
     }
 

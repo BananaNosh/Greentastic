@@ -9,7 +9,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class SearchApiRepository @Inject constructor(val apiService: ApiService){
+class SearchApiRepository @Inject constructor(private val apiService: ApiService){
 
 
     var sourceCompletion: MutableLiveData<List<String>> = MutableLiveData()
@@ -17,6 +17,7 @@ class SearchApiRepository @Inject constructor(val apiService: ApiService){
     var destCompletion: MutableLiveData<List<String>> = MutableLiveData()
     var destIsLoading: MutableLiveData<Boolean> = MutableLiveData()
 
+//    private val compositeDisposable = CompositeDisposable()
 
     fun loadCompletion(searchString: String, searchViewType: Int) {
         val autoCompleteSingle = apiService.getAutoComplete(searchString)
