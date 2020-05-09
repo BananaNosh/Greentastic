@@ -171,6 +171,9 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchForRoute(source: String, dest: String) {
+        if (source == dest) {
+            // TODO warning
+        }
         val vehiclesSingle = apiService.getDirections(source, dest) // TODO cartype, weights
         vehiclesSingle
             .subscribeOn(Schedulers.io())

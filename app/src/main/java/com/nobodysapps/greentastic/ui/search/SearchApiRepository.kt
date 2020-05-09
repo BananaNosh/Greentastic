@@ -20,6 +20,7 @@ class SearchApiRepository @Inject constructor(private val apiService: ApiService
 //    private val compositeDisposable = CompositeDisposable()
 
     fun loadCompletion(searchString: String, searchViewType: Int) {
+        // TODO add caching
         val autoCompleteSingle = apiService.getAutoComplete(searchString)
         autoCompleteSingle
             .subscribeOn(Schedulers.io())
