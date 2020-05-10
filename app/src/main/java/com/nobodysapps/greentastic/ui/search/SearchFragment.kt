@@ -24,6 +24,7 @@ import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import com.nobodysapps.greentastic.storage.SearchApiRepository
+import com.nobodysapps.greentastic.storage.TransportApiRepository
 import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.ui.map.MapFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
@@ -43,6 +44,8 @@ class SearchFragment : Fragment() {
     lateinit var apiService: ApiService
     @Inject
     lateinit var searchApiRepository: SearchApiRepository
+    @Inject
+    lateinit var transportApiRepository: TransportApiRepository
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -173,35 +176,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchForRoute(source: String, dest: String) {
-        if (source == dest) {
-            // TODO warning
-        }
-        val vehiclesSingle = apiService.getDirections(source, dest) // TODO cartype, weights
-        vehiclesSingle
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe {
-                // TODO loading
-            }
-            .doFinally {
-                searchWasStarted = false
-            }
-            .subscribe(object : SingleObserver<VehicleAggregate> {
-                override fun onSuccess(vehicles: VehicleAggregate) {
-                    Log.d(TAG, "vehicles: $vehicles")
-
-                }
-
-                override fun onSubscribe(d: Disposable) {
-                    Log.d(TAG, "onSubscribe called")
-                    compositeDisposable.add(d)
-                }
-
-                override fun onError(e: Throwable) {
-                    Log.d(TAG, "Some error $e")
-                }
-
-            })
+        transportApiRepository.loadVehicles(source, dest)
     }
 
     override fun onResume() {

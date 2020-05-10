@@ -42,7 +42,7 @@ class FakeApiServiceModule {
                 }
             }
 
-            override fun getDirections(
+            override fun getVehicles(
                 source: String,
                 destination: String,
                 carType: String?,

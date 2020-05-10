@@ -25,7 +25,8 @@ data class Vehicle(
     @SerializedName("emission_score")
     val emissionScore: Double,
     @SerializedName("price")
-    val price: Double, @SerializedName("price_col")
+    val price: Double,
+    @SerializedName("price_col")
     val priceCol: List<Int>,
     @SerializedName("price_score")
     val priceScore: Double,
