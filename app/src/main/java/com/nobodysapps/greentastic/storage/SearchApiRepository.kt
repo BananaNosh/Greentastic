@@ -1,14 +1,17 @@
-package com.nobodysapps.greentastic.ui.search
+package com.nobodysapps.greentastic.storage
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nobodysapps.greentastic.networking.ApiService
+import com.nobodysapps.greentastic.ui.search.SearchFragment
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class SearchApiRepository @Inject constructor(private val apiService: ApiService){
 
 

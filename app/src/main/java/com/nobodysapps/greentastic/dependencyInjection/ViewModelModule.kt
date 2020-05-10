@@ -2,7 +2,7 @@ package com.nobodysapps.greentastic.dependencyInjection
 
 import androidx.lifecycle.ViewModel
 import com.nobodysapps.greentastic.ui.ViewModelFactory
-import com.nobodysapps.greentastic.ui.search.SearchApiRepository
+import com.nobodysapps.greentastic.storage.SearchApiRepository
 import com.nobodysapps.greentastic.ui.search.SearchViewModel
 import dagger.MapKey
 import dagger.Module

@@ -2,9 +2,10 @@ package com.nobodysapps.greentastic.ui.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.nobodysapps.greentastic.storage.SearchApiRepository
 import javax.inject.Inject
 
-class SearchViewModel @Inject constructor(val repository: SearchApiRepository): ViewModel() {
+class SearchViewModel @Inject constructor(repository: SearchApiRepository): ViewModel() {
 
 //    var sourceString: LiveData<String> = MutableLiveData()
 //    var destString: LiveData<String> = MutableLiveData()

@@ -23,6 +23,7 @@ import com.nobodysapps.greentastic.errorHandling.NoGPSError
 import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
+import com.nobodysapps.greentastic.storage.SearchApiRepository
 import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.ui.map.MapFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
@@ -40,7 +41,8 @@ class SearchFragment : Fragment() {
 
     @Inject
     lateinit var apiService: ApiService
-
+    @Inject
+    lateinit var searchApiRepository: SearchApiRepository
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -109,7 +111,7 @@ class SearchFragment : Fragment() {
             val onEditTextAction = { _: Int, _: KeyEvent? ->
                 val searchString = searchView.editText.text.toString()
                 if (searchString.isNotEmpty()) {
-                    viewModel.repository.loadCompletion(
+                    searchApiRepository.loadCompletion(
                         searchString,
                         if (searchView == destinationSearchView) SearchApiRepository.SEARCH_VIEW_TYPE_DEST
                         else SearchApiRepository.SEARCH_VIEW_TYPE_SOURCE
