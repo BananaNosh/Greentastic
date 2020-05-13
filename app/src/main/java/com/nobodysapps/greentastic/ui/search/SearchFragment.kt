@@ -81,8 +81,8 @@ class SearchFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
-        super.onAttach(context)
         (requireActivity().application as GreentasticApplication).appComponent.inject(this)
+        super.onAttach(context)
     }
 
     private fun replaceFragment(fragmentToGo: Class<*>) {
