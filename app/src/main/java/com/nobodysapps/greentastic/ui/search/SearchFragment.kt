@@ -21,27 +21,18 @@ import com.nobodysapps.greentastic.activity.PermissionListener
 import com.nobodysapps.greentastic.application.GreentasticApplication
 import com.nobodysapps.greentastic.errorHandling.NoGPSError
 import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
-import com.nobodysapps.greentastic.networking.ApiService
-import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import com.nobodysapps.greentastic.storage.SearchApiRepository
 import com.nobodysapps.greentastic.storage.TransportApiRepository
 import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.ui.map.MapFragment
+import com.nobodysapps.greentastic.ui.transport.TransportFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
-import io.reactivex.SingleObserver
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.map_fragment.*
 import kotlinx.android.synthetic.main.search_fragment.*
 import java.util.*
 import javax.inject.Inject
 
 class SearchFragment : Fragment() {
-
-    @Inject
-    lateinit var apiService: ApiService
     @Inject
     lateinit var searchApiRepository: SearchApiRepository
     @Inject
@@ -49,7 +40,6 @@ class SearchFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var searchWasStarted: Boolean = false
 
     private lateinit var viewModel: SearchViewModel
@@ -107,7 +97,6 @@ class SearchFragment : Fragment() {
                 searchView.showPopup(completions)
             })
             dataViewPair.first.isLoading.observe(viewLifecycleOwner, Observer { loading ->
-                Log.d(TAG, "loading: $loading")
                 searchView.isLoading = loading
             })
             // TODO change focus to second searchView only after completion was clicked
@@ -176,6 +165,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun searchForRoute(source: String, dest: String) {
+        replaceFragment(TransportFragment::class.java)
         transportApiRepository.loadVehicles(source, dest)
     }
 
@@ -227,8 +217,8 @@ class SearchFragment : Fragment() {
 
     private fun askForGPS(onFailure: (Error) -> Unit) {
         val builder = AlertDialog.Builder(context)
-        builder.setMessage(getString(R.string.dialog_enable_gps_message))
-            .setCancelable(false)  //TODO string
+        builder.setMessage(getString(R.string.dialog_enable_gps_message))//TODO string
+            .setCancelable(false)
             .setPositiveButton(
                 android.R.string.yes
             ) { _, _ ->
@@ -273,16 +263,12 @@ class SearchFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         mapView.onPause()
-        if (!compositeDisposable.isDisposed) {
-            Log.d(TAG, "composite disposed")
-            compositeDisposable.dispose()
-        }
     }
 
-    override fun onStop() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         sourceSearchView.dismissPopup()
         destinationSearchView.dismissPopup()
-        super.onStop()
     }
 
     companion object {
