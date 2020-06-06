@@ -5,5 +5,5 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [FakeApiServiceModule::class])
+@Component(modules = [FakeApiServiceModule::class, ViewModelModule::class])
 interface TestAppComponent: ApplicationComponent
