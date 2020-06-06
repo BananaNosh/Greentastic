@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import com.nobodysapps.greentastic.R
 
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.transport_list_item.view.*
  * TODO: Replace the implementation with code for your data type.
  */
 class TransportRecyclerViewAdapter(
-    private val mValues: List<DummyItem>,
+    private val mValues: List<Vehicle>,
     private val mListener: OnListFragmentInteractionListener?
 ) : RecyclerView.Adapter<TransportRecyclerViewAdapter.ViewHolder>() {
 
@@ -42,8 +43,7 @@ class TransportRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = mValues[position]
-        holder.mIdView.text = item.id
-        holder.mContentView.text = item.content
+        holder.vehicleView.setImageResource(item.type.resourceValue)
 
         with(holder.mView) {
             tag = item
@@ -54,11 +54,6 @@ class TransportRecyclerViewAdapter(
     override fun getItemCount(): Int = mValues.size
 
     inner class ViewHolder(val mView: View) : RecyclerView.ViewHolder(mView) {
-        val mIdView: TextView = mView.item_number
-        val mContentView: TextView = mView.content
-
-        override fun toString(): String {
-            return super.toString() + " '" + mContentView.text + "'"
-        }
+        val vehicleView: ImageView = mView.ivVehicle
     }
 }
