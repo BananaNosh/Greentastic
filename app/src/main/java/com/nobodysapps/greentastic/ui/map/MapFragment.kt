@@ -1,5 +1,6 @@
 package com.nobodysapps.greentastic.ui.map
 
+import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.nobodysapps.greentastic.BuildConfig
 import com.nobodysapps.greentastic.R
+import com.nobodysapps.greentastic.activity.GreentasticActivity
+import com.nobodysapps.greentastic.activity.PermissionListener
 import kotlinx.android.synthetic.main.map_fragment.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.util.GeoPoint
@@ -40,5 +43,32 @@ class MapFragment : Fragment() {
         }
         mapView.overlays.add(attribution)
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkStoragePermission()
+    }
+
+    private fun checkStoragePermission() {
+        val listener = object : PermissionListener {
+            override fun onPermissionGranted(permission: String) {
+                mapView.onResume()
+            }
+
+            override fun onPermissionDenied(permission: String) {
+
+            }
+        }
+        (activity as GreentasticActivity).withPermission(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            listener,
+            getString(R.string.map_permission_explication)
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
     }
 }

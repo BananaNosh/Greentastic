@@ -171,28 +171,10 @@ class SearchFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        checkStoragePermission()
         Log.d(TAG, "flag: $searchWasStarted")
         if (searchWasStarted) {
             getSourceAndDestAndSearch()
         }
-    }
-
-    private fun checkStoragePermission() {
-        val listener = object : PermissionListener {
-            override fun onPermissionGranted(permission: String) {
-                mapView.onResume()
-            }
-
-            override fun onPermissionDenied(permission: String) {
-
-            }
-        }
-        (activity as GreentasticActivity).withPermission(
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            listener,
-            getString(R.string.map_permission_explication)
-        )
     }
 
     private fun getCurrentLocation(
@@ -258,11 +240,6 @@ class SearchFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(SEARCH_STARTED_KEY, searchWasStarted)
         super.onSaveInstanceState(outState)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
     }
 
     override fun onDestroyView() {
