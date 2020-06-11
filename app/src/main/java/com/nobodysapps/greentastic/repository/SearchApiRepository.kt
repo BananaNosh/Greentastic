@@ -1,4 +1,4 @@
-package com.nobodysapps.greentastic.storage
+package com.nobodysapps.greentastic.repository
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData

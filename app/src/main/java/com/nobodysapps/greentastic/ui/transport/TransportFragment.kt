@@ -38,7 +38,7 @@ class TransportFragment : Fragment() {
                 layoutManager = LinearLayoutManager(context)
                 adapter =
                     TransportRecyclerViewAdapter(
-                        DummyContent.ITEMS,
+                        emptyList(), // TODO
                         listener
                     )
             }
@@ -73,7 +73,7 @@ class TransportFragment : Fragment() {
      */
     interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onListFragmentInteraction(item: DummyItem?)
+        fun onListFragmentInteraction(item: Vehicle)
     }
 
     companion object {

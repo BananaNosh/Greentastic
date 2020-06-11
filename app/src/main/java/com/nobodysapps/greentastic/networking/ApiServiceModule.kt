@@ -11,13 +11,13 @@ import javax.inject.Singleton
 @Module
 class ApiServiceModule {
 
-        @Singleton
-        @Provides
-        fun provideApiService(): ApiService {
-                return Retrofit.Builder()
-                        .baseUrl("https://clean-commuter.appspot.com")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .build().create(ApiService::class.java)
-        }
+    @Singleton
+    @Provides
+    fun provideApiService(): ApiService {
+        return Retrofit.Builder()
+            .baseUrl("https://clean-commuter.appspot.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build().create(ApiService::class.java)
+    }
 }

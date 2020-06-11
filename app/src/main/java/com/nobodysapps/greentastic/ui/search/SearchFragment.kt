@@ -21,13 +21,11 @@ import com.nobodysapps.greentastic.activity.PermissionListener
 import com.nobodysapps.greentastic.application.GreentasticApplication
 import com.nobodysapps.greentastic.errorHandling.NoGPSError
 import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
-import com.nobodysapps.greentastic.storage.SearchApiRepository
-import com.nobodysapps.greentastic.storage.TransportApiRepository
+import com.nobodysapps.greentastic.repository.SearchApiRepository
+import com.nobodysapps.greentastic.repository.TransportRepository
 import com.nobodysapps.greentastic.ui.ViewModelFactory
-import com.nobodysapps.greentastic.ui.map.MapFragment
 import com.nobodysapps.greentastic.ui.transport.TransportFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
-import kotlinx.android.synthetic.main.map_fragment.*
 import kotlinx.android.synthetic.main.search_fragment.*
 import java.util.*
 import javax.inject.Inject
@@ -36,7 +34,7 @@ class SearchFragment : Fragment() {
     @Inject
     lateinit var searchApiRepository: SearchApiRepository
     @Inject
-    lateinit var transportApiRepository: TransportApiRepository
+    lateinit var transportRepository: TransportRepository
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -65,7 +63,8 @@ class SearchFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        replaceFragment(MapFragment::class.java)
+//        replaceFragment(MapFragment::class.java)
+        replaceFragment(TransportFragment::class.java) // TODO remove
         setupSearchTextViews()
         Log.d(TAG, sourceSearchView.toString())
     }
@@ -166,7 +165,7 @@ class SearchFragment : Fragment() {
 
     private fun searchForRoute(source: String, dest: String) {
         replaceFragment(TransportFragment::class.java)
-        transportApiRepository.loadVehicles(source, dest)
+        transportRepository.loadVehicles(source, dest)
     }
 
     override fun onResume() {

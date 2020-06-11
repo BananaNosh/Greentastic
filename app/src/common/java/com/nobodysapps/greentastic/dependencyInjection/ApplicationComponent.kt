@@ -2,13 +2,14 @@ package com.nobodysapps.greentastic.dependencyInjection
 
 import android.content.Context
 import com.nobodysapps.greentastic.networking.ApiServiceModule
+import com.nobodysapps.greentastic.storage.DatabaseModule
 import com.nobodysapps.greentastic.ui.search.SearchFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [ViewModelModule::class, ApiServiceModule::class])
+@Component(modules = [ViewModelModule::class, ApiServiceModule::class, DatabaseModule::class])
 interface ApplicationComponent {
 
     @Component.Factory
