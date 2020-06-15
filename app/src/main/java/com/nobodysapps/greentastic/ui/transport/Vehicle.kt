@@ -4,6 +4,7 @@ import androidx.annotation.ColorInt
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.networking.model.ApiVehicle
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
+import com.nobodysapps.greentastic.utils.toRGB
 
 data class Vehicle(
     val type: VehicleType,
@@ -43,15 +44,6 @@ fun vehicleFromApi(type: VehicleType, apiVehicle: ApiVehicle) = Vehicle(
     VehicleValue(apiVehicle.toxicity, apiVehicle.toxicityScore, apiVehicle.toxicityCol.toRGB()),
     VehicleValue(apiVehicle.duration, apiVehicle.durationScore, apiVehicle.durationCol.toRGB())
 )
-
-
-@ColorInt
-fun List<Int>.toRGB(): Int {
-    return (255 shl 24) or
-            (this[0] shl 16) or
-            (this[1] shl 8) or
-            this[2]
-}
 
 
 data class VehicleValue(val absoluteValue: Float, val score: Float, val color: Int)

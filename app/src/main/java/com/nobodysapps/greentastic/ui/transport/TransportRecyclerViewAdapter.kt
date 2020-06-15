@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
 import com.nobodysapps.greentastic.ui.transport.TransportFragment.OnListFragmentInteractionListener
+import com.nobodysapps.greentastic.utils.setTint
 import kotlinx.android.synthetic.main.transport_list_item.view.*
 
 /**
@@ -43,10 +44,6 @@ class TransportRecyclerViewAdapter : RecyclerView.Adapter<TransportRecyclerViewA
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.transport_list_item, parent, false)
         return ViewHolder(view)
-    }
-
-    fun ImageView.setTint(@ColorInt color: Int) {
-        ImageViewCompat.setImageTintList(this, ColorStateList.valueOf(color))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
