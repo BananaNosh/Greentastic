@@ -3,6 +3,7 @@ package com.nobodysapps.greentastic.ui.transport
 import androidx.annotation.ColorInt
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.networking.model.ApiVehicle
+import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 
 data class Vehicle(
     val type: VehicleType,
@@ -15,32 +16,42 @@ data class Vehicle(
 )
 
 
+fun vehiclesFromAggregate(vehicleAggregate: VehicleAggregate): List<Vehicle> {
+    val types = listOf(
+        VehicleType.BIKE,
+        VehicleType.CAR,
+        VehicleType.E_BIKE,
+        VehicleType.E_SCOOTER,
+        VehicleType.PUBLIC_TRANSPORT,
+        VehicleType.WALKING
+    )
+    val (bike, car, eBike, eScooter, publicTransport, walking) = vehicleAggregate
+    val vehicles = listOf(bike, car, eBike, eScooter, publicTransport, walking)
+    return types.zip(vehicles).map {
+        val (type, apiVehicle) = it
+        vehicleFromApi(type, apiVehicle)
+    }
+}
+
+
 fun vehicleFromApi(type: VehicleType, apiVehicle: ApiVehicle) = Vehicle(
     type,
-    VehicleValue(0f, apiVehicle.totalWeightedScore, apiVehicle.totalWeightedScoreCol.toARGB()),
-    VehicleValue(apiVehicle.price, apiVehicle.priceScore, apiVehicle.priceCol.toARGB()),
-    VehicleValue(apiVehicle.calories, apiVehicle.caloriesScore, apiVehicle.caloriesCol.toARGB()),
-    VehicleValue(apiVehicle.emission, apiVehicle.emissionScore, apiVehicle.emissionCol.toARGB()),
-    VehicleValue(apiVehicle.toxicity, apiVehicle.toxicityScore, apiVehicle.toxicityCol.toARGB()),
-    VehicleValue(apiVehicle.duration, apiVehicle.durationScore, apiVehicle.durationCol.toARGB())
+    VehicleValue(0f, apiVehicle.totalWeightedScore, apiVehicle.totalWeightedScoreCol.toRGB()),
+    VehicleValue(apiVehicle.price, apiVehicle.priceScore, apiVehicle.priceCol.toRGB()),
+    VehicleValue(apiVehicle.calories, apiVehicle.caloriesScore, apiVehicle.caloriesCol.toRGB()),
+    VehicleValue(apiVehicle.emission, apiVehicle.emissionScore, apiVehicle.emissionCol.toRGB()),
+    VehicleValue(apiVehicle.toxicity, apiVehicle.toxicityScore, apiVehicle.toxicityCol.toRGB()),
+    VehicleValue(apiVehicle.duration, apiVehicle.durationScore, apiVehicle.durationCol.toRGB())
 )
 
 
 @ColorInt
-fun List<Int>.toARGB(): Int {
-    val aValue = when (this.size) {
-        4 -> this[3]
-        3 -> 1
-        else -> throw IllegalArgumentException("Must be length 3 or 4")
-    }
-    return (aValue * 255.0f + 0.5f).toInt() shl 24 or
-            ((this[0] * 255.0f + 0.5f).toInt() shl 16) or
-            ((this[1] * 255.0f + 0.5f).toInt() shl 8) or
-            (this[2] * 255.0f + 0.5f).toInt()
+fun List<Int>.toRGB(): Int {
+    return (255 shl 24) or
+            (this[0] shl 16) or
+            (this[1] shl 8) or
+            this[2]
 }
-
-
-
 
 
 data class VehicleValue(val absoluteValue: Float, val score: Float, val color: Int)

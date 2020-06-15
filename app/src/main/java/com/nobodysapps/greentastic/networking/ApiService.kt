@@ -11,10 +11,10 @@ interface ApiService {
                         @Query("user_location") userLocation: String?=null): Single<List<String>>
 
     @GET("query_directions")
-    fun getVehicles(@Query("source") source: String,
+    suspend fun getVehicles(@Query("source") source: String,
                     @Query("destination") destination: String,
                     @Query("car_type") carType: String?=null,
-                    @Query("car_type") weights: List<String>?=null): Single<VehicleAggregate>
+                    @Query("car_type") weights: List<String>?=null): VehicleAggregate
 }
 
 //"https://clean-commuter.appspot.com/query_directions?source=\(source_)&destination=\(destination)&car_type=\( car_type)&weights=\(time),\(emis),\(cost),\(cals),\(toxc)

@@ -11,6 +11,6 @@ data class Connection(
     val from: String,
     val to: String,
     val vehicles: List<Vehicle>,
-    @ColumnInfo(defaultValue = "CURRENT_TIMESTAMP") val updateTime: String,  // TODO check default value
+    val updateTime: Long,
     val requested: Boolean
 )

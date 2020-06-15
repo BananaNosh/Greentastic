@@ -1,9 +1,13 @@
 package com.nobodysapps.greentastic.dependencyInjection
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.repository.SearchApiRepository
+import com.nobodysapps.greentastic.repository.TransportRepository
 import com.nobodysapps.greentastic.ui.search.SearchViewModel
+import com.nobodysapps.greentastic.ui.transport.TransportFragment
+import com.nobodysapps.greentastic.ui.transport.TransportViewModel
 import dagger.MapKey
 import dagger.Module
 import dagger.Provides
@@ -28,5 +32,12 @@ class ViewModelModule {
     @ViewModelKey(SearchViewModel::class)
     fun provideSearchViewModel(repository: SearchApiRepository): ViewModel {
         return SearchViewModel(repository)
+    }
+
+    @Provides
+    @IntoMap
+    @ViewModelKey(TransportViewModel::class)
+    fun provideTransportViewModel(repository: TransportRepository): ViewModel {
+        return TransportViewModel(repository)
     }
 }

@@ -42,7 +42,7 @@ data class ApiVehicle(
     val toxicityScore: Float
 )
 
-data class VehicleAggregate(
+data class VehicleAggregate(  //TODO check handling for incomplete ApiData
     @SerializedName("bicycling")
     val bike: ApiVehicle,
     @SerializedName("driving")

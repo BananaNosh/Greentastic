@@ -5,12 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/item_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
     <ImageView
         android:id="@+id/ivVehicle"
         android:layout_width="wrap_content"
@@ -21,10 +15,12 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
         <ImageView
-            android:src="@drawable/ic_co2"
-            android:layout_width="48dp"
-            android:layout_height="48dp"/>
+            android:id="@+id/ivMoney"
+            tools:src="@drawable/ic_co2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         <TextView
+            android:id="@+id/tvMoney"
             android:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,10 +31,12 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
         <ImageView
-            android:src="@drawable/ic_flag_24dp"
+            android:id="@+id/ivCalories"
+            tools:src="@drawable/ic_co2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
+            android:id="@+id/tvCalories"
             tools:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,16 +47,49 @@
         android:orientation="vertical"
         android:layout_height="match_parent">
         <ImageView
-            android:src="@drawable/ic_flag_24dp"
+            android:id="@+id/ivCO2"
+            tools:src="@drawable/ic_co2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
+            android:id="@+id/tvCO2"
             tools:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="1dp"/>
     </LinearLayout>
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/ivToxic"
+            tools:src="@drawable/ic_co2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tvToxic"
+            tools:text="12%"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/ivDuration"
+            tools:src="@drawable/ic_co2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/tvDuration"
+            tools:text="12%"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"/>
+    </LinearLayout>
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"

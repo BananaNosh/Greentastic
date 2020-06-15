@@ -42,44 +42,78 @@ class FakeApiServiceModule {
                 }
             }
 
-            override fun getVehicles(
+            override suspend fun getVehicles(
                 source: String,
                 destination: String,
                 carType: String?,
                 weights: List<String>?
-            ): Single<VehicleAggregate> {
-                return Single.create { emitter ->
-                    emitter.onSuccess(
-                        VehicleAggregate(
-                            ApiVehicle(
-                                12749.0f,
-                                listOf(173, 255, 47),
-                                0.86f,
-                                emptyList(),
-                                76499.0f,
-                                listOf(264, 184, 60),
-                                0.43f,
-                                1.94f,
-                                listOf(50, 205, 50),
-                                0.75f,
-                                38.87f,
-                                listOf(255, 120, 71),
-                                0.35f,
-                                0.8518518518518521f,
-                                listOf(173, 255, 47),
-                                0.0f,
-                                listOf(50, 205, 50),
-                                1.0f
-                            ),
-                            fakeVehicle,
-                            fakeVehicle,
-                            fakeVehicle,
-                            fakeVehicle,
-                            fakeVehicle
-                        )
-                    )
-                }
-            }
+            ): VehicleAggregate =
+                VehicleAggregate(
+                    ApiVehicle(
+                        12749.0f,
+                        listOf(173, 255, 47),
+                        0.86f,
+                        emptyList(),
+                        76499.0f,
+                        listOf(264, 184, 60),
+                        0.43f,
+                        1.94f,
+                        listOf(50, 205, 50),
+                        0.75f,
+                        38.87f,
+                        listOf(255, 120, 71),
+                        0.35f,
+                        0.8518518518518521f,
+                        listOf(173, 255, 47),
+                        0.0f,
+                        listOf(50, 205, 50),
+                        1.0f
+                    ),
+                    fakeVehicle,
+                    fakeVehicle,
+                    fakeVehicle,
+                    fakeVehicle,
+                    fakeVehicle
+                )
+
+//            override fun getVehicles(
+//                source: String,
+//                destination: String,
+//                carType: String?,
+//                weights: List<String>?
+//            ): Single<VehicleAggregate> {
+//                return Single.create { emitter ->
+//                    emitter.onSuccess(
+//                        VehicleAggregate(
+//                            ApiVehicle(
+//                                12749.0f,
+//                                listOf(173, 255, 47),
+//                                0.86f,
+//                                emptyList(),
+//                                76499.0f,
+//                                listOf(264, 184, 60),
+//                                0.43f,
+//                                1.94f,
+//                                listOf(50, 205, 50),
+//                                0.75f,
+//                                38.87f,
+//                                listOf(255, 120, 71),
+//                                0.35f,
+//                                0.8518518518518521f,
+//                                listOf(173, 255, 47),
+//                                0.0f,
+//                                listOf(50, 205, 50),
+//                                1.0f
+//                            ),
+//                            fakeVehicle,
+//                            fakeVehicle,
+//                            fakeVehicle,
+//                            fakeVehicle,
+//                            fakeVehicle
+//                        )
+//                    )
+//                }
+//            }
 
         }
     }

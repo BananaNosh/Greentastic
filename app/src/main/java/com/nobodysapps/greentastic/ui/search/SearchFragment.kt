@@ -12,9 +12,11 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
 import com.nobodysapps.greentastic.activity.PermissionListener
@@ -24,6 +26,7 @@ import com.nobodysapps.greentastic.errorHandling.NoLocationPermissionError
 import com.nobodysapps.greentastic.repository.SearchApiRepository
 import com.nobodysapps.greentastic.repository.TransportRepository
 import com.nobodysapps.greentastic.ui.ViewModelFactory
+import com.nobodysapps.greentastic.ui.map.MapFragment
 import com.nobodysapps.greentastic.ui.transport.TransportFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
 import kotlinx.android.synthetic.main.search_fragment.*
@@ -33,14 +36,21 @@ import javax.inject.Inject
 class SearchFragment : Fragment() {
     @Inject
     lateinit var searchApiRepository: SearchApiRepository
+
     @Inject
     lateinit var transportRepository: TransportRepository
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     private var searchWasStarted: Boolean = false
 
     private lateinit var viewModel: SearchViewModel
+
+    override fun onAttach(context: Context) {
+        (requireActivity().application as GreentasticApplication).appComponent.inject(this)
+        super.onAttach(context)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,15 +73,9 @@ class SearchFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-//        replaceFragment(MapFragment::class.java)
-        replaceFragment(TransportFragment::class.java) // TODO remove
+        replaceFragment(MapFragment::class.java)
         setupSearchTextViews()
         Log.d(TAG, sourceSearchView.toString())
-    }
-
-    override fun onAttach(context: Context) {
-        (requireActivity().application as GreentasticApplication).appComponent.inject(this)
-        super.onAttach(context)
     }
 
     private fun replaceFragment(fragmentToGo: Class<*>) {
@@ -124,7 +128,12 @@ class SearchFragment : Fragment() {
             val onTextChanged = { text: String ->
                 dataViewPair.first.searchString.value = text
             }
-            searchView.setListener(onEditTextAction, onPopupItemClicked, onNoPopupItemClicked, onTextChanged)
+            searchView.setListener(
+                onEditTextAction,
+                onPopupItemClicked,
+                onNoPopupItemClicked,
+                onTextChanged
+            )
         }
     }
 
@@ -165,7 +174,9 @@ class SearchFragment : Fragment() {
 
     private fun searchForRoute(source: String, dest: String) {
         replaceFragment(TransportFragment::class.java)
-        transportRepository.loadVehicles(source, dest)
+        lifecycleScope.launchWhenCreated {
+            transportRepository.loadVehicles(source, dest)
+        }
     }
 
     override fun onResume() {
@@ -174,6 +185,7 @@ class SearchFragment : Fragment() {
         if (searchWasStarted) {
             getSourceAndDestAndSearch()
         }
+        searchForRoute("zurich", "frankfurt") // TODO remove
     }
 
     private fun getCurrentLocation(

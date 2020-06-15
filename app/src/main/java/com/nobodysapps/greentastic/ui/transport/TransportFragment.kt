@@ -2,6 +2,7 @@ package com.nobodysapps.greentastic.ui.transport
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,10 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.nobodysapps.greentastic.R
+import com.nobodysapps.greentastic.application.GreentasticApplication
+import com.nobodysapps.greentastic.ui.ViewModelFactory
 
 import com.nobodysapps.greentastic.ui.dummy.DummyContent
 import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
+import com.nobodysapps.greentastic.ui.search.SearchViewModel
+import javax.inject.Inject
 
 /**
  * A fragment representing a list of Items.
@@ -20,10 +27,21 @@ import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
  * [TransportFragment.OnListFragmentInteractionListener] interface.
  */
 class TransportFragment : Fragment() {
-    private var listener: OnListFragmentInteractionListener? = null
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: TransportViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var listener: OnListFragmentInteractionListener? = null
+    private val transportRecyclerViewAdapter = TransportRecyclerViewAdapter()
+
+    override fun onAttach(context: Context) {
+        (requireActivity().application as GreentasticApplication).appComponent.inject(this)
+        super.onAttach(context)
+//        if (context is OnListFragmentInteractionListener) {
+//            listener = context
+//        } else {
+//            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
+//        }
     }
 
     override fun onCreateView(
@@ -32,27 +50,21 @@ class TransportFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.transport_fragment, container, false)
 
+        Log.d(TAG, viewModelFactory.toString())
+        viewModel = ViewModelProvider(this, viewModelFactory).get(
+            TransportViewModel::class.java
+        )
         // Set the adapter
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = LinearLayoutManager(context)
-                adapter =
-                    TransportRecyclerViewAdapter(
-                        emptyList(), // TODO
-                        listener
-                    )
+                adapter = transportRecyclerViewAdapter
             }
         }
+        viewModel.vehicles.observe(viewLifecycleOwner, Observer { vehicles ->
+            transportRecyclerViewAdapter.vehicles = vehicles
+        })
         return view
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-//        if (context is OnListFragmentInteractionListener) {
-//            listener = context
-//        } else {
-//            throw RuntimeException(context.toString() + " must implement OnListFragmentInteractionListener")
-//        }
     }
 
     override fun onDetach() {
@@ -77,6 +89,6 @@ class TransportFragment : Fragment() {
     }
 
     companion object {
-
+        const val TAG = "TransportFragment"
     }
 }

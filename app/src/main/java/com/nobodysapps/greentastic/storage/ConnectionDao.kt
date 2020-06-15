@@ -10,10 +10,10 @@ abstract class ConnectionDao {
     abstract suspend fun insert(connection: Connection)
 
     @Query("SELECT vehicles FROM connections_table WHERE requested=1")
-    protected abstract suspend fun load(): Converters.VehiclesWrapper
+    protected abstract suspend fun load(): Converters.VehiclesWrapper?
 
     suspend fun loadRequestedVehicles(): List<Vehicle> {
-        return load().vehicles
+        return load()?.vehicles ?: emptyList()
     }
 
     @Query("UPDATE connections_table SET requested=0")
