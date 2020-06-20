@@ -9,5 +9,5 @@ open class GreentasticApplication: Application() {
         initializeComponent()
     }
 
-    open fun initializeComponent() = DaggerApplicationComponent.factory().create(applicationContext)
+    open fun initializeComponent() = DaggerApplicationComponent.factory().create(this)
 }
