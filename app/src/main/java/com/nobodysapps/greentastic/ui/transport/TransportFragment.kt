@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.application.GreentasticApplication
 import com.nobodysapps.greentastic.ui.ViewModelFactory
@@ -19,6 +20,8 @@ import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.ui.dummy.DummyContent
 import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
 import com.nobodysapps.greentastic.ui.search.SearchViewModel
+import kotlinx.android.synthetic.main.transport_fragment.*
+import kotlinx.android.synthetic.main.transport_fragment.view.*
 import javax.inject.Inject
 
 /**
@@ -55,14 +58,13 @@ class TransportFragment : Fragment() {
         arguments?.let {
             val source = it.getString(SOURCE_KEY, null) ?: ""
             val dest = it.getString(DESTINATION_KEY, null) ?: ""
-            viewModel.load(source, dest)
-        }
-        // Set the adapter
-        if (view is RecyclerView) {
-            with(view) {
-                layoutManager = LinearLayoutManager(context)
-                adapter = transportRecyclerViewAdapter
+            activity?.lifecycleScope?.let { scope ->
+                viewModel.load(source, dest, scope)  // TODO check if okay to do this way
             }
+        }
+        with(view.rvTransport) {
+            layoutManager = LinearLayoutManager(context)
+            adapter = transportRecyclerViewAdapter
         }
         viewModel.vehicles.observe(viewLifecycleOwner, Observer { vehicles ->
             transportRecyclerViewAdapter.vehicles = vehicles
