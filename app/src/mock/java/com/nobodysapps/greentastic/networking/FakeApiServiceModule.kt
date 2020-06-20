@@ -8,8 +8,9 @@ import io.reactivex.Single
 
 
 @Module
-class FakeApiServiceModule {
+object FakeApiServiceModule {
 
+    @JvmStatic
     @Provides
     fun provideApiService(): ApiService {
         return object : ApiService {
@@ -64,7 +65,7 @@ class FakeApiServiceModule {
                         listOf(255, 120, 71),
                         0.35f,
                         0.8518518518518521f,
-                        listOf(173, 255, 47),
+                        listOf((0..255).random(), (0..255).random(), (0..255).random()),
                         0.0f,
                         listOf(50, 205, 50),
                         1.0f

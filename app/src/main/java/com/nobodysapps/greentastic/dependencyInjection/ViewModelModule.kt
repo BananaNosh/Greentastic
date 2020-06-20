@@ -37,7 +37,7 @@ class ViewModelModule {
     @Provides
     @IntoMap
     @ViewModelKey(TransportViewModel::class)
-    fun provideTransportViewModel(repository: TransportRepository): ViewModel {
-        return TransportViewModel(repository)
+    fun provideTransportViewModel(repository: TransportRepository, application: Application): ViewModel {
+        return TransportViewModel(repository, application)
     }
 }

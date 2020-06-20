@@ -1,5 +1,6 @@
 package com.nobodysapps.greentastic.dependencyInjection
 
+import android.app.Application
 import android.content.Context
 import com.nobodysapps.greentastic.networking.FakeApiServiceModule
 import com.nobodysapps.greentastic.storage.DatabaseModule
@@ -11,12 +12,12 @@ import javax.inject.Singleton
 
 @Suppress("unused")
 @Singleton
-@Component(modules = [ViewModelModule::class, FakeApiServiceModule::class, DatabaseModule::class])
+@Component(modules = [ContextModule::class, ViewModelModule::class, FakeApiServiceModule::class, DatabaseModule::class])
 interface ApplicationComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance context: Context): ApplicationComponent
+        fun create(@BindsInstance application: Application): ApplicationComponent
     }
 
     fun inject(fragment: SearchFragment)

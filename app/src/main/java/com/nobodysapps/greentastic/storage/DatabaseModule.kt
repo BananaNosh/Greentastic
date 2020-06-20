@@ -7,8 +7,9 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DatabaseModule {
+object DatabaseModule {
 
+    @JvmStatic
     @Singleton
     @Provides
     fun providesDatabase(context: Context): Database = Room.databaseBuilder(
@@ -17,6 +18,7 @@ class DatabaseModule {
         "database"
     ).build()
 
+    @JvmStatic
     @Provides
     fun providesConnectionDao(database: Database): ConnectionDao = database.connectionDao()
 
