@@ -1,6 +1,6 @@
 package com.nobodysapps.greentastic.repository
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.storage.Connection
 import com.nobodysapps.greentastic.storage.ConnectionDao
@@ -12,21 +12,33 @@ import javax.inject.Inject
 class TransportRepository @Inject constructor(private val apiService: ApiService, private val connectionDao: ConnectionDao) {
 
 
-    var isLoading: MutableLiveData<Boolean> = MutableLiveData()
-//    var vehicles: MutableLiveData<List<Vehicle>> = connectionDao.loadRequestedVehicles()
+//    var isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    var vehicles = connectionDao.loadRequestedVehicles()
 
     suspend fun loadVehicles(source: String, dest: String) {
-        if (source == dest) {
-            // TODO warning
-        }
+        Log.d(TAG, "Start loading vehicles")
+//        if (source == dest) {
+//            // TODO warning
+//        }
         // TODO check cached
-//        connectionDao.resetRequested()
-        val downloadedVehicles =
-            vehiclesFromAggregate(apiService.getVehicles(source, dest)) // TODO cartype, weights
-        connectionDao.insert(Connection(source, dest, downloadedVehicles, Calendar.getInstance().timeInMillis, true))
+        connectionDao.resetRequested()
+        val updated = connectionDao.setRequestedIfStored(source, dest) > 0
+        if (!updated) {
+            val downloadedVehicles =
+                vehiclesFromAggregate(apiService.getVehicles(source, dest)) // TODO cartype, weights
+            downloadedVehicles?.let {
+                connectionDao.insert(
+                    Connection(
+                        source,
+                        dest,
+                        downloadedVehicles,
+                        Calendar.getInstance().timeInMillis,
+                        true
+                    )
+                )
+            } // TODO null response from api (frankfurt - tunisia)
+        }
     }
-
-    suspend fun loadVehicles() = connectionDao.loadRequestedVehicles()
 
     companion object {
         const val TAG = "TransportApiRepository"

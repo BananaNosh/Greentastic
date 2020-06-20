@@ -1,6 +1,5 @@
 package com.nobodysapps.greentastic.ui.transport
 
-import androidx.annotation.ColorInt
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.networking.model.ApiVehicle
 import com.nobodysapps.greentastic.networking.model.VehicleAggregate
@@ -17,21 +16,24 @@ data class Vehicle(
 )
 
 
-fun vehiclesFromAggregate(vehicleAggregate: VehicleAggregate): List<Vehicle> {
-    val types = listOf(
-        VehicleType.BIKE,
-        VehicleType.CAR,
-        VehicleType.E_BIKE,
-        VehicleType.E_SCOOTER,
-        VehicleType.PUBLIC_TRANSPORT,
-        VehicleType.WALKING
-    )
-    val (bike, car, eBike, eScooter, publicTransport, walking) = vehicleAggregate
-    val vehicles = listOf(bike, car, eBike, eScooter, publicTransport, walking)
-    return types.zip(vehicles).map {
-        val (type, apiVehicle) = it
-        vehicleFromApi(type, apiVehicle)
+fun vehiclesFromAggregate(vehicleAggregate: VehicleAggregate?): List<Vehicle>? {
+    vehicleAggregate?.let {_ ->
+        val types = listOf(
+            VehicleType.BIKE,
+            VehicleType.CAR,
+            VehicleType.E_BIKE,
+            VehicleType.E_SCOOTER,
+            VehicleType.PUBLIC_TRANSPORT,
+            VehicleType.WALKING
+        )
+        val (bike, car, eBike, eScooter, publicTransport, walking) = vehicleAggregate
+        val vehicles = listOf(bike, car, eBike, eScooter, publicTransport, walking)
+        return types.zip(vehicles).map {
+            val (type, apiVehicle) = it
+            vehicleFromApi(type, apiVehicle)
+        }
     }
+    return null
 }
 
 

@@ -1,6 +1,7 @@
 package com.nobodysapps.greentastic.storage
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import androidx.room.*
 import com.nobodysapps.greentastic.ui.transport.Vehicle
 
@@ -10,14 +11,17 @@ abstract class ConnectionDao {
     abstract suspend fun insert(connection: Connection)
 
     @Query("SELECT vehicles FROM connections_table WHERE requested=1")
-    protected abstract suspend fun load(): Converters.VehiclesWrapper?
+    protected abstract fun load(): LiveData<Converters.VehiclesWrapper?>
 
-    suspend fun loadRequestedVehicles(): List<Vehicle> {
-        return load()?.vehicles ?: emptyList()
+    fun loadRequestedVehicles(): LiveData<List<Vehicle>> {
+        return load().map { it?.vehicles ?: emptyList() }
     }
 
+    @Query("UPDATE connections_table SET requested=1 WHERE `from`=:from AND `to`=:to")
+    abstract suspend fun setRequestedIfStored(from: String, to: String): Int
+
     @Query("UPDATE connections_table SET requested=0")
-    abstract suspend fun resetRequested()
+    abstract suspend fun resetRequested(): Int
 
 //    @Update(entity = Connection::class)
 //    abstract suspend fun unrequest(from: String, to: String, requested: Boolean)

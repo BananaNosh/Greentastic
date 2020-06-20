@@ -12,11 +12,9 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
 import com.nobodysapps.greentastic.activity.PermissionListener
@@ -79,8 +77,12 @@ class SearchFragment : Fragment() {
     }
 
     private fun replaceFragment(fragmentToGo: Class<*>) {
+        replaceFragment(fragmentToGo.newInstance() as Fragment)
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
         childFragmentManager.beginTransaction()
-            .replace(R.id.fragment_layout, fragmentToGo.newInstance() as Fragment).commit()
+            .replace(R.id.fragment_layout, fragment).commit()
     }
 
     private fun setupSearchTextViews() {
@@ -161,22 +163,22 @@ class SearchFragment : Fragment() {
         if (source.isEmpty()) {
             getCurrentLocation({ (lat, long) ->
                 Log.d(TAG, "location $lat, $long")
-                searchForRoute("$lat,$long", dest)
+                searchForRouteAndOpenTransportFragment("$lat,$long", dest)
             }, { error ->
                 Log.d(TAG, "location error $error")
                 // TODO dialog source oder enable GPS
                 // searchwasstarted = false ??
             })
         } else {
-            searchForRoute(source, dest)
+            searchForRouteAndOpenTransportFragment(source, dest)
         }
     }
 
-    private fun searchForRoute(source: String, dest: String) {
-        replaceFragment(TransportFragment::class.java)
-        lifecycleScope.launchWhenCreated {
-            transportRepository.loadVehicles(source, dest)
-        }
+    private fun searchForRouteAndOpenTransportFragment(source: String, dest: String) {
+        replaceFragment(TransportFragment.newInstance(source, dest))
+//        lifecycleScope.launchWhenCreated {
+//            transportRepository.loadVehicles(source, dest)
+//        }
     }
 
     override fun onResume() {
@@ -185,7 +187,7 @@ class SearchFragment : Fragment() {
         if (searchWasStarted) {
             getSourceAndDestAndSearch()
         }
-        searchForRoute("zurich", "frankfurt") // TODO remove
+//        searchForRoute("zurich", "frankfurt") // TODO remove
     }
 
     private fun getCurrentLocation(

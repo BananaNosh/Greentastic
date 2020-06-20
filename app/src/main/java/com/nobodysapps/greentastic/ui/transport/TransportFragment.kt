@@ -51,9 +51,12 @@ class TransportFragment : Fragment() {
         val view = inflater.inflate(R.layout.transport_fragment, container, false)
 
         Log.d(TAG, viewModelFactory.toString())
-        viewModel = ViewModelProvider(this, viewModelFactory).get(
-            TransportViewModel::class.java
-        )
+        viewModel = ViewModelProvider(this, viewModelFactory).get(TransportViewModel::class.java)
+        arguments?.let {
+            val source = it.getString(SOURCE_KEY, null) ?: ""
+            val dest = it.getString(DESTINATION_KEY, null) ?: ""
+            viewModel.load(source, dest)
+        }
         // Set the adapter
         if (view is RecyclerView) {
             with(view) {
@@ -90,5 +93,16 @@ class TransportFragment : Fragment() {
 
     companion object {
         const val TAG = "TransportFragment"
+        private const val SOURCE_KEY = "source"
+        private const val DESTINATION_KEY = "dest"
+
+        @JvmStatic
+        fun newInstance(source: String, dest: String) =
+            TransportFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SOURCE_KEY, source)
+                    putString(DESTINATION_KEY, dest)
+                }
+            }
     }
 }
