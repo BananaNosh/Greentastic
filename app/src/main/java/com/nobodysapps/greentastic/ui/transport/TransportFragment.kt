@@ -62,10 +62,7 @@ class TransportFragment : Fragment() {
                 viewModel.load(source, dest, scope)  // TODO check if okay to do this way
             }
         }
-        with(view.rvTransport) {
-            layoutManager = LinearLayoutManager(context)
-            adapter = transportRecyclerViewAdapter
-        }
+        view.rvTransport.adapter = transportRecyclerViewAdapter
         viewModel.vehicles.observe(viewLifecycleOwner, Observer { vehicles ->
             transportRecyclerViewAdapter.vehicles = vehicles
         })
