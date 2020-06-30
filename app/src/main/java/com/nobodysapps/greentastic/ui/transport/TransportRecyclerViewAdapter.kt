@@ -1,15 +1,11 @@
 package com.nobodysapps.greentastic.ui.transport
 
 
-import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
@@ -52,14 +48,15 @@ class TransportRecyclerViewAdapter : RecyclerView.Adapter<TransportRecyclerViewA
         holder.vehicleView.setTint(vehicle.total.color)
 
         val critImages = listOf(R.drawable.ic_co2, R.drawable.ic_cal, R.drawable.ic_toxic, R.drawable.ic_money, R.drawable.ic_time)
-        val critLabels = listOf(vehicle.emission.absoluteValue, vehicle.calories.absoluteValue, vehicle.toxicity.absoluteValue, vehicle.price.absoluteValue, vehicle.duration.absoluteValue)
-        val critColour = listOf(vehicle.emission.color, vehicle.calories.color, vehicle.toxicity.color, vehicle.price.color, vehicle.duration.color)
+        val critValues = listOf(vehicle.emission, vehicle.calories, vehicle.toxicity, vehicle.price, vehicle.duration)
         val critViews = listOf(holder.co2Views, holder.calViews, holder.toxViews, holder.priceViews, holder.durationViews)
 
         critViews.forEachIndexed { index, (imageView, textView) ->
+            val vehicleValue = critValues[index]
             imageView.setImageResource(critImages[index])
-            imageView.setTint(critColour[index])
-            textView.text = critLabels[index].toString()
+            imageView.setTint(vehicleValue.color)
+            textView.text = vehicleValue.unit.evaluate(vehicleValue.absoluteValue)
+            textView.setTextColor(vehicleValue.color)
         }
 
         with(holder.mView) {

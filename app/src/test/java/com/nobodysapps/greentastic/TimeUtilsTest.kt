@@ -4,11 +4,7 @@ import com.nobodysapps.greentastic.utils.TimeFormatter
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
+
 class TimeUtilsTest {
     @Test
     fun testMillisToTimeString() {
@@ -41,6 +37,7 @@ class TimeUtilsTest {
             )
         assertEquals("2'", timeFormatter3.millisToTimeString(120000))
         assertEquals("1h 2'", timeFormatter3.millisToTimeString(3720000))
+        assertEquals("54'", timeFormatter3.millisToTimeString(3231000))
 
     }
 }

@@ -1,6 +1,7 @@
 package com.nobodysapps.greentastic.utils
 
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 
 class TimeFormatter(
@@ -14,18 +15,26 @@ class TimeFormatter(
     fun millisToTimeString(millis: Long): String {
         var remaining = millis
         val stringValues = HashMap<String, String>()
-        formats.toSortedMap(Comparator { o1, o2 ->
+        val sortedFormats = formats.toSortedMap(Comparator { o1, o2 ->
             -(timeUnits[o1]?.compareTo(timeUnits[o2]) ?: 0)
-        }).filter {
+        })
+        sortedFormats.filter {
             it.key in totalString
         }.forEach {
-            val valueOfUnit = fromMillis(timeUnits[it.key], remaining)
-            remaining -= (timeUnits[it.key]?.toMillis(1) ?: 0) * valueOfUnit
+            var valueOfUnit = fromMillis(timeUnits[it.key], remaining)
+            val millisPerUnit = timeUnits[it.key]?.toMillis(1) ?: 0
+            remaining -= millisPerUnit * valueOfUnit
+
+            if (it.key == sortedFormats.lastKey() && remaining > 0 && it.key in timeUnits) {
+                valueOfUnit += (remaining / timeUnits.getValue(it.key).toMillis(1).toFloat()).roundToInt()
+            }
+
             var format = it.value
             val isOptional = format.startsWith("?")
             if (isOptional) format = format.substring(1)
+            val isTrailingZero = remaining == millis
             stringValues[it.key] =
-                if (remaining < millis || !isOptional) format.format(valueOfUnit) else ""
+                if (!isTrailingZero || !isOptional) format.format(valueOfUnit) else ""
         }
         var string = totalString
         stringValues.forEach {
