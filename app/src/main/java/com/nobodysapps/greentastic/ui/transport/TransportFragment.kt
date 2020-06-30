@@ -3,24 +3,16 @@ package com.nobodysapps.greentastic.ui.transport
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.application.GreentasticApplication
 import com.nobodysapps.greentastic.ui.ViewModelFactory
-
-import com.nobodysapps.greentastic.ui.dummy.DummyContent
-import com.nobodysapps.greentastic.ui.dummy.DummyContent.DummyItem
-import com.nobodysapps.greentastic.ui.search.SearchViewModel
-import kotlinx.android.synthetic.main.transport_fragment.*
 import kotlinx.android.synthetic.main.transport_fragment.view.*
 import javax.inject.Inject
 
@@ -65,6 +57,9 @@ class TransportFragment : Fragment() {
         view.rvTransport.adapter = transportRecyclerViewAdapter
         viewModel.vehicles.observe(viewLifecycleOwner, Observer { vehicles ->
             transportRecyclerViewAdapter.vehicles = vehicles
+        })
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
+            view.pbLoading.visibility = if (it) View.VISIBLE else View.GONE
         })
         return view
     }

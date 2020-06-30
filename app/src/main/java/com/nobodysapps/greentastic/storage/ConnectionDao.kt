@@ -14,7 +14,7 @@ abstract class ConnectionDao {
     protected abstract fun load(): LiveData<Converters.VehiclesWrapper?>
 
     fun loadRequestedVehicles(): LiveData<List<Vehicle>> {
-        return load().map { it?.vehicles ?: emptyList() }
+        return load().map { it?.vehicles?.sortedByDescending { vehicle -> vehicle.total.score } ?: emptyList() }
     }
 
     @Query("UPDATE connections_table SET requested=1 WHERE `from`=:from AND `to`=:to")

@@ -1,95 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal">
+    android:layout_margin="10dp"
+    android:divider="@drawable/empty_tall_divider"
+    android:orientation="horizontal"
+    android:showDividers="middle">
 
     <ImageView
         android:id="@+id/ivVehicle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_bike"/>
+        android:src="@drawable/ic_bike" />
+
     <LinearLayout
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <ImageView
             android:id="@+id/ivMoney"
-            tools:src="@drawable/ic_co2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_co2" />
+
         <TextView
             android:id="@+id/tvMoney"
-            android:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"/>
+            android:layout_marginTop="1dp"
+            android:text="12%" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <ImageView
             android:id="@+id/ivCalories"
-            tools:src="@drawable/ic_co2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_co2" />
+
         <TextView
             android:id="@+id/tvCalories"
-            tools:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"/>
+            android:layout_marginTop="1dp"
+            tools:text="12%" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <ImageView
             android:id="@+id/ivCO2"
-            tools:src="@drawable/ic_co2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_co2" />
+
         <TextView
             android:id="@+id/tvCO2"
-            tools:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"/>
+            android:layout_marginTop="1dp"
+            tools:text="12%" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <ImageView
             android:id="@+id/ivToxic"
-            tools:src="@drawable/ic_co2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            tools:src="@drawable/ic_co2" />
+
         <TextView
             android:id="@+id/tvToxic"
-            tools:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"/>
+            android:layout_marginTop="1dp"
+            tools:text="12%" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
         <ImageView
             android:id="@+id/ivDuration"
-            tools:src="@drawable/ic_co2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/tvDuration"
-            tools:text="12%"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="1dp"/>
+            tools:src="@drawable/ic_co2" />
+
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            tools:text="12%" />
     </LinearLayout>
+
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"

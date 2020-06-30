@@ -21,9 +21,10 @@ class TransportViewModel @Inject constructor(
     val vehicles: LiveData<List<Vehicle>> = transportRepository.vehicles
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun load(source: String, dest: String, scope: CoroutineScope=viewModelScope) = scope.launch(Dispatchers.IO) {
-//        isLoading.value = true
+    fun load(source: String, dest: String, scope: CoroutineScope=viewModelScope) = scope.launch(Dispatchers.Main) {
+        isLoading.value = true
         transportRepository.loadVehicles(source, dest)
+        isLoading.value = false
     }
 
     companion object {

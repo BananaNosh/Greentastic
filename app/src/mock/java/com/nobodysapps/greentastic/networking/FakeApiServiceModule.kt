@@ -5,6 +5,7 @@ import com.nobodysapps.greentastic.networking.model.VehicleAggregate
 import dagger.Module
 import dagger.Provides
 import io.reactivex.Single
+import kotlinx.coroutines.delay
 
 
 @Module
@@ -38,7 +39,7 @@ object FakeApiServiceModule {
                             )
                         }
                     }
-                    Thread.sleep(DELAY)
+//                    Thread.sleep(DELAY)
                     it.onSuccess(suggestions)
                 }
             }
@@ -48,8 +49,9 @@ object FakeApiServiceModule {
                 destination: String,
                 carType: String?,
                 weights: List<String>?
-            ): VehicleAggregate =
-                VehicleAggregate(
+            ): VehicleAggregate {
+                delay(DELAY)
+                return VehicleAggregate(
                     ApiVehicle(
                         12749.0f,
                         listOf(173, 255, 47),
@@ -76,6 +78,8 @@ object FakeApiServiceModule {
                     fakeVehicle,
                     fakeVehicle
                 )
+            }
+
 
 //            override fun getVehicles(
 //                source: String,
@@ -130,4 +134,4 @@ private val fakeVehicle = ApiVehicle(
     0.8518518518518521f, listOf(173, 255, 47), 0.0f, listOf(50, 205, 50), 1.0f
 )
 
-private const val DELAY: Long = 1000
+private const val DELAY: Long = 5000
