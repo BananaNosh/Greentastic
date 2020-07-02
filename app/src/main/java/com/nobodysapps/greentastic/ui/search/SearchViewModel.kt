@@ -7,13 +7,6 @@ import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(repository: SearchApiRepository): ViewModel() {
 
-//    var sourceString: LiveData<String> = MutableLiveData()
-//    var destString: LiveData<String> = MutableLiveData()
-//
-////    var sourceIsLoading: LiveData<Boolean> = repository
-//
-//    var sourceCompletion = repository.sourceCompletion
-//    var destCompletion = repository.destCompletion
     var sourceData: SearchViewData = SearchViewData(repository.sourceCompletion, repository.sourceIsLoading)
     var destData: SearchViewData = SearchViewData(repository.destCompletion, repository.destIsLoading)
 
