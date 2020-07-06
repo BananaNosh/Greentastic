@@ -4,3 +4,11 @@ features:
 
 bugs:
     completion geht nicht bei erstem start??
+
+    edge case: vehicle not found
+
+    transport list:
+        images mittig, schrift nicht abschneiden, listview mit padding für tabs at bottom
+
+    löschen der Daten, wenn zu alt
+

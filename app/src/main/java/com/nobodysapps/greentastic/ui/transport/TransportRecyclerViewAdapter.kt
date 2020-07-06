@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.transport_list_item.view.*
 /**
  * [RecyclerView.Adapter] that can display a [DummyItem] and makes a call to the
  * specified [OnListFragmentInteractionListener].
- * TODO: Replace the implementation with code for your data type.
  */
 class TransportRecyclerViewAdapter : RecyclerView.Adapter<TransportRecyclerViewAdapter.ViewHolder>() {
     var vehicles = emptyList<Vehicle>()
