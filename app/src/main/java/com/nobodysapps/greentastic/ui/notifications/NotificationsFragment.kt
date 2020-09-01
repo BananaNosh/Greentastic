@@ -22,9 +22,7 @@ class NotificationsFragment : Fragment() {
         notificationsViewModel =
             ViewModelProviders.of(this).get(NotificationsViewModel::class.java)
         val root = inflater.inflate(R.layout.notifications_fragment, container, false)
-        val textView: TextView = root.findViewById(R.id.text_notifications)
         notificationsViewModel.text.observe(this, Observer {
-            textView.text = it
         })
         return root
     }
