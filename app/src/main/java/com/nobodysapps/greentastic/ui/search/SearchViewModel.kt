@@ -3,15 +3,16 @@ package com.nobodysapps.greentastic.ui.search
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.nobodysapps.greentastic.repository.SearchApiRepository
+import com.nobodysapps.greentastic.utils.ResultObject
 import javax.inject.Inject
 
 class SearchViewModel @Inject constructor(repository: SearchApiRepository): ViewModel() {
 
-    var sourceData: SearchViewData = SearchViewData(repository.sourceCompletion, repository.sourceIsLoading)
-    var destData: SearchViewData = SearchViewData(repository.destCompletion, repository.destIsLoading)
+    val sourceData: SearchViewData = SearchViewData(repository.sourceCompletion)
+    val destData: SearchViewData = SearchViewData(repository.destCompletion)
 
 
-    class SearchViewData(val completionList: MutableLiveData<List<String>>, val isLoading: MutableLiveData<Boolean>) {
+    class SearchViewData(val completionResult: MutableLiveData<ResultObject<List<String>>>) {
         val searchString = MutableLiveData<String>()
     }
 

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.nobodysapps.greentastic.networking.ApiService
 import com.nobodysapps.greentastic.ui.search.SearchFragment
+import com.nobodysapps.greentastic.utils.ResultObject
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -15,10 +16,8 @@ import javax.inject.Singleton
 class SearchApiRepository @Inject constructor(private val apiService: ApiService){
 
 
-    var sourceCompletion: MutableLiveData<List<String>> = MutableLiveData()
-    var sourceIsLoading: MutableLiveData<Boolean> = MutableLiveData()
-    var destCompletion: MutableLiveData<List<String>> = MutableLiveData()
-    var destIsLoading: MutableLiveData<Boolean> = MutableLiveData()
+    var sourceCompletion: MutableLiveData<ResultObject<List<String>>> = MutableLiveData()
+    var destCompletion: MutableLiveData<ResultObject<List<String>>> = MutableLiveData()
 
 //    private val compositeDisposable = CompositeDisposable()
 
@@ -30,15 +29,9 @@ class SearchApiRepository @Inject constructor(private val apiService: ApiService
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe {
                 when (searchViewType) {
-                    SEARCH_VIEW_TYPE_SOURCE -> sourceIsLoading
-                    else -> destIsLoading
-                }.value = true
-            }
-            .doFinally {
-                when (searchViewType) {
-                    SEARCH_VIEW_TYPE_SOURCE -> sourceIsLoading
-                    else -> destIsLoading
-                }.value = false
+                    SEARCH_VIEW_TYPE_SOURCE -> sourceCompletion
+                    else -> destCompletion
+                }.value = ResultObject()
             }
             .subscribe(object : SingleObserver<List<String>> {
                 override fun onSuccess(suggestions: List<String>) {
@@ -47,7 +40,7 @@ class SearchApiRepository @Inject constructor(private val apiService: ApiService
                     when (searchViewType) {
                         SEARCH_VIEW_TYPE_SOURCE -> sourceCompletion
                         else -> destCompletion
-                    }.value = suggestions
+                    }.value = ResultObject(suggestions)
                 }
 
                 override fun onSubscribe(d: Disposable) {

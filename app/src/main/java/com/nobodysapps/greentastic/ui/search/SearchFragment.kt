@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nobodysapps.greentastic.R
 import com.nobodysapps.greentastic.activity.GreentasticActivity
@@ -27,6 +26,8 @@ import com.nobodysapps.greentastic.ui.ViewModelFactory
 import com.nobodysapps.greentastic.ui.map.MapFragment
 import com.nobodysapps.greentastic.ui.transport.TransportFragment
 import com.nobodysapps.greentastic.ui.views.SearchView
+import com.nobodysapps.greentastic.utils.ResultObject
+import com.nobodysapps.greentastic.utils.ResultState
 import kotlinx.android.synthetic.main.search_fragment.*
 import java.util.*
 import javax.inject.Inject
@@ -93,16 +94,16 @@ class SearchFragment : Fragment() {
             )
         ).forEach { dataViewPair ->
             val searchView = dataViewPair.second
-            dataViewPair.first.searchString.observe(viewLifecycleOwner, Observer { t ->
+            dataViewPair.first.searchString.observe(viewLifecycleOwner, { t ->
                 if (t != searchView.editText.text.toString()) {
                     searchView.editText.setText(t)
                 }
             })
-            dataViewPair.first.completionList.observe(viewLifecycleOwner, Observer { completions ->
-                searchView.showPopup(completions)
-            })
-            dataViewPair.first.isLoading.observe(viewLifecycleOwner, Observer { loading ->
-                searchView.isLoading = loading
+            dataViewPair.first.completionResult.observe(viewLifecycleOwner, { completionsResult ->
+                searchView.isLoading = completionsResult.state == ResultState.LOADING
+                if (completionsResult.state == ResultState.LOADED) {
+                    searchView.showPopup(completionsResult.value ?: emptyList())
+                }
             })
             // TODO change focus to second searchView only after completion was clicked
             val onEditTextAction = { _: Int, _: KeyEvent? ->
@@ -123,7 +124,7 @@ class SearchFragment : Fragment() {
                 true
             }
             val onNoPopupItemClicked: () -> Unit = {
-                dataViewPair.first.completionList.value?.firstOrNull()?.let {
+                dataViewPair.first.completionResult.value?.value?.firstOrNull()?.let {
                     onCompletionClicked(it, searchView)
                 }
             }
@@ -145,7 +146,7 @@ class SearchFragment : Fragment() {
             else -> viewModel.destData
         }
         searchViewData.searchString.value = selectedCompletion
-        searchViewData.completionList.value = Collections.emptyList()
+        searchViewData.completionResult.value = ResultObject(Collections.emptyList())
         val dest = viewModel.destData.searchString.value
         if (dest != null && dest.isNotEmpty()) {
             searchWasStarted = true

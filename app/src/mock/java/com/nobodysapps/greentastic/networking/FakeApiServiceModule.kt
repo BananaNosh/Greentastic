@@ -39,7 +39,7 @@ object FakeApiServiceModule {
                             )
                         }
                     }
-//                    Thread.sleep(DELAY)
+                    Thread.sleep(DELAY)
                     it.onSuccess(suggestions)
                 }
             }
@@ -134,4 +134,4 @@ private val fakeVehicle = ApiVehicle(
     0.8518518518518521f, listOf(173, 255, 47), 0.0f, listOf(50, 205, 50), 1.0f
 )
 
-private const val DELAY: Long = 5000
+private const val DELAY: Long = 0
